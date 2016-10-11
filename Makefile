@@ -5,7 +5,8 @@ SOURCES = *.c
 EXECUTABLE = font-info
 #TESTFONT = /usr/share/fonts/TTF/Oxygen-Sans.ttf
 #TESTFONT = /usr/share/fonts/TTF/DejaVuSans.ttf
-TESTFONT = ~/google-fonts/apache/roboto/Roboto-Regular.ttf
+#TESTFONT = ~/google-fonts/apache/roboto/Roboto-Regular.ttf
+TESTFONT = ~/google-fonts/ofl/pacifico/Pacifico.ttf
 
 build: $(OBJECTS)
 	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(SOURCES) 
