@@ -49,7 +49,11 @@ B_Image B_Conv_convolve( B_Conv conv, const B_Image image )
         {
             // for each pixel convolve that shit
             int pixel = B_Conv_convolvePixel( conv, image, row, col );
-            B_Image_setPixel( out, col, row, (pixel>255?255:pixel&0xFF) );
+            if( pixel > 255 )
+                pixel = 255;
+            else if( pixel < 0 )
+                pixel = 0;
+            B_Image_setPixel( out, col, row, pixel&0xFF );
         }
     }
     return out;
