@@ -41,7 +41,7 @@ B_Image BT_Face_renderString( BT_Face face, const char * string );
 /**
  * Creates a B_Image from a glyph
  */
-B_Image BT_Face_renderGlyph( BT_Face face, const FT_Glyph glyph );
+B_Image BT_Face_renderGlyph( const FT_Glyph glyph );
 
 /**
  * Creates a B_Image from a char

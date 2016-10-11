@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "bconv.h"
 
 #define B_CONV_CELL(m,r,c) (c + r*m->width)
@@ -27,13 +28,10 @@ B_Conv B_Conv_new( const int matrix[], const int width, const int height,
     return conv;
 }
 
-B_Conv B_Conv_new2d( const int **matrix, const int width, const int height,
-                     const int divisor )
-{
-}
-
 void B_Conv_delete( B_Conv conv )
 {
+    free( conv->matrix );
+    free( conv );
 }
 
 
@@ -65,7 +63,6 @@ int B_Conv_convolvePixel( B_Conv conv, const B_Image image,
     int width = conv->width;
 
     int midRow = conv->height / 2;
-    int midCol = conv->width / 2;
 
     int iHeight = B_Image_getHeight( image );
     int iWidth = B_Image_getWidth( image );
@@ -101,7 +98,7 @@ int B_Conv_convolvePixel( B_Conv conv, const B_Image image,
         }
     }
 
-    sum /= conv->divisor;
-    sum /= coefSum?coefSum:1;
+    sum /= conv->divisor;       // divide by the divisor part
+    sum /= coefSum?coefSum:1;   // divide by the coefficients
     return sum;
 }

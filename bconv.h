@@ -18,12 +18,6 @@ typedef B_Conv_Rec * B_Conv;
 B_Conv B_Conv_new( const int matrix[], const int width, const int height,
                    const int divisor );
 
-/**
- * Same as other, but matrix is now 2D
- */
-B_Conv B_Conv_new2d( const int **matrix, const int width, const int height,
-                     const int divisor );
-
 void B_Conv_delete( B_Conv conv );
 
 /**

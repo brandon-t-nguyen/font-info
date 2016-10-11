@@ -176,7 +176,7 @@ B_Image BT_Face_renderString( BT_Face face, const char * string )
 }
 
 
-B_Image BT_Face_renderGlyph( BT_Face face, const FT_Glyph glyph )
+B_Image BT_Face_renderGlyph( const FT_Glyph glyph )
 {
     FT_BitmapGlyph bitmapGlyph = (FT_BitmapGlyph)glyph;
     B_Image image = B_Image_new( bitmapGlyph->bitmap.width, bitmapGlyph->bitmap.rows );
@@ -189,8 +189,7 @@ B_Image BT_Face_renderGlyph( BT_Face face, const FT_Glyph glyph )
 
 B_Image BT_Face_renderChar( BT_Face face, const int code )
 {
-    B_Image image = BT_Face_renderGlyph( face,
-                                         face->glyphs[BT_glyphHash(code)] );
+    B_Image image = BT_Face_renderGlyph( face->glyphs[BT_glyphHash(code)] );
     return image;
 }
 
