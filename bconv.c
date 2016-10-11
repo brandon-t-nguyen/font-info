@@ -2,7 +2,7 @@
 #include <string.h>
 #include "bconv.h"
 
-#define B_CONV_CELL(m,r,c) (c + r*m->width)
+#define B_CONV_CELL(m,r,c) (m->matrix[(c + r*(m->width))])
 
 struct B_Conv_Rec_str
 {
@@ -92,9 +92,12 @@ int B_Conv_convolvePixel( B_Conv conv, const B_Image image,
                 srcCol = iWidth-1;
             else
                 srcCol = iCol;
-            sum += B_CONV_CELL(conv,cRow,cCol) *
-                   B_Image_getPixel( image, srcCol, srcRow );
-            coefSum += B_CONV_CELL(conv,cRow,cCol);
+
+            int cellVal = B_CONV_CELL(conv,cRow,cCol);
+            int pixelVal = B_Image_getPixel( image, srcCol, srcRow );
+
+            sum += cellVal * pixelVal;
+            coefSum += cellVal;
         }
     }
 
