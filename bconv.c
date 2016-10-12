@@ -98,10 +98,10 @@ int B_Conv_convolvePixel( B_Conv conv, const B_Image image,
                 srcCol = iCol;
 
             int cellVal = B_CONV_CELL(conv,cRow,cCol);
-            int pixelVal = B_Image_getPixel( image, srcCol, srcRow );
+            int pixelVal = (B_Image_getPixel( image, srcCol, srcRow )&0xFF);
 
             sum += cellVal * pixelVal;
-            coefSum += cellVal;
+            coefSum += cellVal<0?-cellVal:cellVal;
         }
     }
 

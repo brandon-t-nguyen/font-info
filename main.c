@@ -5,20 +5,58 @@
 #include "btypeface.h"
 #include "bimage.h"
 #include "bconv.h"
+#include "alg.h"
 
 const int id[] = { 0,0,0,
                    0,1,0,
                    0,0,0 };
 
+const int sharp[] = { 0,-1,0,
+                      -1,5,-1,
+                      0,-1,0 };
+
+const int edge[] = { 0, 1, 0,
+                     1,-4, 1,
+                     0, 1, 0 };
+
+                    //  0,  0,  0,  0,  0,
+const int curve[] = {
+                        0, -4, -4,  8,  8,
+                        0, -4,  4,  8, -4,
+                        0, -4,  8,  4, -4,
+                        0, -4,  8, -4, -4,
+                        0, -4,  8, -4, -4,
+                    };
+
+void algTest(BT_Face face)
+{
+    alg_init();
+    int cscore = 0;
+    int sscore = 0;
+    for( int c = '!'; c <= '~'; c++ )
+    {
+        B_Image character = BT_Face_renderChar( face, c );
+        cscore += alg_calculateCurvature(character);
+        sscore += alg_calculateStraightness(character);
+        B_Image_delete( character );
+    }
+    cscore /= ('~'-'!'+1);   // average
+    sscore /= ('~'-'!'+1);   // average
+    printf("Curvature score: %d\n", cscore);
+    printf("Straightness score: %d\n", sscore);
+
+    alg_done();
+}
+
 void convolveTest(BT_Face face)
 {
-    B_Conv conv = B_Conv_new( id, 3, 3, 1 );
+    B_Conv conv = B_Conv_new( curve, 5, 5, 1 );
     B_Image image = BT_Face_renderChar( face, 'A' );
     printf("Before convolution:\n");
     B_Image_fprint( image, stdout );
 
     B_Image convImage = B_Conv_convolve( conv, image );
-    printf("After identity convolution:\n");
+    printf("After convolution:\n");
     B_Image_fprint( convImage, stdout );
 
 
@@ -46,27 +84,14 @@ int main(int argc, char *argv[])
         fprintf(stderr,"Problem occurred during freetype library initialization");
         exit(1);
     }
-    //BT_Print_Bitmap( &face->glyph->bitmap );
 
     BT_Face face = BT_Face_new( &error, library, fontFilePath, 12);
-    /*
-    for(int c = '!'; c <= '~'; c++)
-    {
-        //FT_Glyph glyph = BT_Face_getGlyph( face, c );
-        //BT_Print_Bitmap( &((FT_BitmapGlyph)glyph)->bitmap );
-        BT_Print_Glyph( BT_Face_getGlyph( face, c) );
-        putchar('\n');
-    }
-    */
-    B_Image image = BT_Face_renderString( face, "Hello, team!" );
-    B_Image_fprint( image, stdout );
-    B_Image_delete( image );
 
+    //convolveTest( face );
+    algTest( face );
 
-    convolveTest( face );
-
-    BT_Face_delete( face );
     // cleanup
+    BT_Face_delete( face );
     FT_Done_FreeType( library );
 }
 
