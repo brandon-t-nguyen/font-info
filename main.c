@@ -54,7 +54,7 @@ void algTest(BT_Face face)
 
 void convolveTest(BT_Face face)
 {
-    B_Conv conv = B_Conv_new( curve, 5, 5, 1 );
+    B_Conv conv = B_Conv_new( curve, 1, 5, 5 );
     B_Image image = BT_Face_renderChar( face, 'a' );
     printf("Before convolution:\n");
     B_Image_fprint( image, stdout );
