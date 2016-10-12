@@ -58,6 +58,28 @@ B_Conv B_Conv_transpose( const B_Conv input )
     return conv;
 }
 
+B_Conv B_Conv_rotate( const B_Conv input )
+{
+    // transpose
+    B_Conv conv = B_Conv_transpose( input );
+    // for each row
+    int *matrix = conv->matrix;
+    int height = input->height;
+    int width = input->width;
+    for( int r = 0; r < height; r++ )
+    {
+        // reverse each row
+        for( int cB = 0, cE = width-1; cB < cE; cB++, cE-- )
+        {
+            // swap
+            int temp = matrix[ r*width + cE ];
+            matrix[ r*width + cE ] = matrix[ r*width + cB ];
+            matrix[ r*width + cB ] = temp;
+        }
+    }
+    return conv;
+}
+
 B_Image B_Conv_convolve( B_Conv conv, const B_Image image )
 {
     int width = B_Image_getWidth(image);

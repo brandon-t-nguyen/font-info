@@ -28,6 +28,11 @@ void B_Conv_delete( B_Conv conv );
 B_Conv B_Conv_transpose( const B_Conv input );
 
 /**
+ * Returns a new B_Conv that's rotated 90 degrees
+ */
+B_Conv B_Conv_rotate( const B_Conv input );
+
+/**
  * Returns a B_Image of the convolved image
  * @param conv The convolution
  * @param image The input image
