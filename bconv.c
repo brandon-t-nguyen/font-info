@@ -12,8 +12,8 @@ struct B_Conv_Rec_str
     int height;
 };
 
-B_Conv B_Conv_new( const int matrix[], const int width, const int height,
-                   const int divisor )
+B_Conv B_Conv_new( const int matrix[], const int divisor,
+                   const int width, const int height )
 {
     if( !(width % 2) && !(height % 2) )
     {

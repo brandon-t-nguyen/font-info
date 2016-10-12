@@ -15,8 +15,8 @@ typedef B_Conv_Rec * B_Conv;
  * @param width Width of matrix
  * @param height Height of matrix
  */
-B_Conv B_Conv_new( const int matrix[], const int width, const int height,
-                   const int divisor );
+B_Conv B_Conv_new( const int matrix[], const int divisor,
+                   const int width, const int height );
 
 void B_Conv_delete( B_Conv conv );
 
