@@ -15,5 +15,13 @@ void alg_done(void);
 int alg_calculateCurvature( B_Image image );
 int alg_calculateStraightness( B_Image image );
 
+/**
+ * Calculates a score based off of
+ * the area used by the character:
+ * area used divided by total area
+ * @return 1/10000 fractionals
+ */
+int alg_calculateAreaUsed( B_Image image );
+
 #endif // __ALG_H__
 

@@ -33,17 +33,21 @@ void algTest(BT_Face face)
     alg_init();
     int cscore = 0;
     int sscore = 0;
+    int ascore = 0;
     for( int c = '!'; c <= '~'; c++ )
     {
         B_Image character = BT_Face_renderChar( face, c );
         cscore += alg_calculateCurvature(character);
         sscore += alg_calculateStraightness(character);
+        ascore += alg_calculateAreaUsed(character);
         B_Image_delete( character );
     }
     cscore /= ('~'-'!'+1);   // average
     sscore /= ('~'-'!'+1);   // average
+    ascore /= ('~'-'!'+1);   // average
     printf("Curvature score: %d\n", cscore);
     printf("Straightness score: %d\n", sscore);
+    printf("Area used score: %d\n", ascore);
 
     alg_done();
 }
@@ -51,7 +55,7 @@ void algTest(BT_Face face)
 void convolveTest(BT_Face face)
 {
     B_Conv conv = B_Conv_new( curve, 5, 5, 1 );
-    B_Image image = BT_Face_renderChar( face, 'A' );
+    B_Image image = BT_Face_renderChar( face, 'a' );
     printf("Before convolution:\n");
     B_Image_fprint( image, stdout );
 

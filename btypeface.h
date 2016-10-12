@@ -13,7 +13,7 @@
  */
 #define WEB_DPI 72
 #define PRINT_DPI 300
-#define DPI WEB_DPI
+#define DPI PRINT_DPI
 #define point(x) (x*64)
 //#define grayToAscii(x) (x==0?' ':(x<128?'.':'*'))
 #define grayToAscii(x) (x==0?' ':(x<64?'.':(x<128?'*':'#')))

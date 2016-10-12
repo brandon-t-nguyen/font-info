@@ -6,6 +6,7 @@ int alg_calculate( B_Image image, B_Conv convs[], int numConvs )
 {
     int width = B_Image_getWidth( image );
     int height = B_Image_getHeight( image );
+    int area = width * height;
     int score = 0;
     for( int r = 0; r < height; r++ )
     {
@@ -17,7 +18,32 @@ int alg_calculate( B_Image image, B_Conv convs[], int numConvs )
             }
         }
     }
-    return score;
+    return score*1000/area;
+}
+
+/////// Area Used    /////////
+void alg_areaUsedInit(void)
+{
+}
+void alg_areaUsedDone(void)
+{
+}
+int alg_calculateAreaUsed( B_Image image )
+{
+    int width = B_Image_getWidth( image );
+    int height = B_Image_getHeight( image );
+    int area = width * height;
+    int calc = 0;
+    for( int r = 0; r < height; r++ )
+    {
+        for( int c = 0; c < width; c++ )
+        {
+            if( B_Image_getPixel( image, c, r ) > 128 )
+                calc++;
+        }
+    }
+    int fraction = calc * 10000 / area;
+    return fraction;
 }
 
 /////// Straightness /////////
@@ -70,10 +96,6 @@ static int curve_bl[] = {
                            0, 0, 0, 0, 2
                         };
 
-B_Conv curve_topLeft ;
-B_Conv curve_topRight;
-B_Conv curve_botLeft ;
-B_Conv curve_botRight;
 B_Conv curve_convs[4];
 void alg_curvatureInit(void)
 {
@@ -100,12 +122,14 @@ void alg_init(void)
 {
     alg_curvatureInit();
     alg_straightnessInit();
+    alg_areaUsedInit();
 }
 
 void alg_done(void)
 {
     alg_curvatureDone();
     alg_straightnessDone();
+    alg_areaUsedDone();
 }
 
 
