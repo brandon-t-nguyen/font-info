@@ -18,6 +18,13 @@ int alg_calculate( B_Image image, B_Conv convs[], int numConvs )
             }
         }
     }
+    B_Image_fprint(image,stdout);
+    for( int i = 0; i < numConvs; i++)
+    {
+        B_Image lol = B_Conv_convolve( convs[i], image );
+        B_Image_fprint(lol,stdout);
+        B_Image_delete(lol);
+    }
     return score*1000/area;
 }
 
@@ -68,41 +75,19 @@ int alg_calculateStraightness( B_Image image )
 
 ///////   Curvature  /////////
 static int curve_tl[] = {
-                           0, 0, 0, 0, 2,
-                           0, 0, 1, 2,-2,
-                           0, 0, 2, 1,-2,
-                           0, 0, 2,-2,-2,
-                           0, 0, 2,-2,-2,
+                          -3, -9, -9,  1,  1,
+                          -3, -9,  3,  7,  7,
+                          -5,  3,  7,  3, -5,
+                           1,  7,  3, -9, -3,
+                           1,  7, -9, -9, -3,
                         };
-static int curve_tr[] = {
-                           2, 0, 0, 0, 0,
-                          -2, 2, 1, 0, 0,
-                          -2, 1, 2, 0, 0,
-                          -2,-2, 2, 0, 0,
-                          -2,-2, 2, 0, 0,
-                        };
-static int curve_br[] = {
-                          -2,-2, 2, 0, 0,
-                          -2,-2, 2, 0, 0,
-                          -2, 1, 2, 0, 0,
-                          -2, 2, 1, 0, 0,
-                           2, 0, 0, 0, 0,
-                        };
-static int curve_bl[] = {
-                           0, 0, 2,-2,-2,
-                           0, 0, 2,-2,-2,
-                           0, 0, 2, 1,-2,
-                           0, 0, 1, 2,-2,
-                           0, 0, 0, 0, 2
-                        };
-
 B_Conv curve_convs[4];
 void alg_curvatureInit(void)
 {
     curve_convs[0] = B_Conv_new( curve_tl, 1, 5, 5 );
-    curve_convs[1] = B_Conv_new( curve_tr, 1, 5, 5 );
-    curve_convs[2] = B_Conv_new( curve_bl, 1, 5, 5 );
-    curve_convs[3] = B_Conv_new( curve_br, 1, 5, 5 );
+    curve_convs[1] = B_Conv_rotate( curve_convs[0] );
+    curve_convs[2] = B_Conv_rotate( curve_convs[1] );
+    curve_convs[3] = B_Conv_rotate( curve_convs[2] );
 }
 void alg_curvatureDone(void)
 {
