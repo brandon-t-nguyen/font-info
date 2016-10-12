@@ -36,7 +36,7 @@ void B_Conv_delete( B_Conv conv )
 }
 
 
-B_Conv B_Conv_rotate( const B_Conv input )
+B_Conv B_Conv_transpose( const B_Conv input )
 {
     B_Conv conv = (B_Conv) malloc( sizeof(B_Conv_Rec) );
     conv->width = input->height;
