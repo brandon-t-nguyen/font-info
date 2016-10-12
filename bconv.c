@@ -2,7 +2,8 @@
 #include <string.h>
 #include "bconv.h"
 
-#define B_CONV_CELL(m,r,c) (m->matrix[(c + r*(m->width))])
+#define B_CONV_INDEX(m,r,c) (c + r*(m->width))
+#define B_CONV_CELL(m,r,c) ( m->matrix[B_CONV_INDEX(m,r,c)] )
 
 struct B_Conv_Rec_str
 {
@@ -34,6 +35,28 @@ void B_Conv_delete( B_Conv conv )
     free( conv );
 }
 
+
+B_Conv B_Conv_rotate( const B_Conv input )
+{
+    B_Conv conv = (B_Conv) malloc( sizeof(B_Conv_Rec) );
+    conv->width = input->height;
+    conv->height = input->width;
+    conv->matrix = (int *) malloc( sizeof(int) * conv->width * conv->height );
+    conv->divisor = input->divisor;
+    // transfer values
+    int *iMatrix = input->matrix;
+    int *cMatrix = conv->matrix;
+    int iWidth = input->width;
+    int iHeight = input->height;
+    for( int iRow = 0; iRow < iWidth; iRow++ )
+    {
+        for( int iCol = 0; iCol < iWidth; iCol++ )
+        {
+            cMatrix[ iCol * iHeight + iRow ] = iMatrix[ iRow * iWidth + iCol];
+        }
+    }
+    return conv;
+}
 
 B_Image B_Conv_convolve( B_Conv conv, const B_Image image )
 {

@@ -21,6 +21,13 @@ B_Conv B_Conv_new( const int matrix[], const int divisor,
 void B_Conv_delete( B_Conv conv );
 
 /**
+ * Returns a new B_Conv that is the input transposed 90 degress cw
+ * @param input The input convolution
+ * @return Rotated convolution
+ */
+B_Conv B_Conv_rotate( const B_Conv input );
+
+/**
  * Returns a B_Image of the convolved image
  * @param conv The convolution
  * @param image The input image
