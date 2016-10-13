@@ -14,10 +14,12 @@ int alg_calculate( B_Image image, B_Conv convs[], int numConvs )
         {
             for( int i = 0; i < numConvs; i++ )
             {
-                score += B_Conv_convolvePixel( convs[i], image, r, c );
+                int toAdd = B_Conv_convolvePixel( convs[i], image, r, c );
+                score += toAdd<0?0:toAdd;
             }
         }
     }
+    /*
     B_Image_fprint(image,stdout);
     for( int i = 0; i < numConvs; i++)
     {
@@ -25,6 +27,7 @@ int alg_calculate( B_Image image, B_Conv convs[], int numConvs )
         B_Image_fprint(lol,stdout);
         B_Image_delete(lol);
     }
+    */
     return score*1000/area;
 }
 
@@ -74,32 +77,60 @@ int alg_calculateStraightness( B_Image image )
 }
 
 ///////   Curvature  /////////
+static int curve_edge_mat[] = {
+                               -1, -1, -1,
+                               -1,  8, -1,
+                               -1, -1, -1,
+                          };
 static int curve_tl[] = {
-                          -3, -9, -9,  1,  1,
-                          -3, -9,  3,  7,  7,
-                          -5,  3,  7,  3, -5,
-                           1,  7,  3, -9, -3,
-                           1,  7, -9, -9, -3,
+                          -9, -9, -9,  1,  1,
+                          -9, -9,  3,  7,  7,
+                          -9,  3,  7,  3, -9,
+                           1,  7,  3, -9, -9,
+                           1,  7, -9, -9, -9,
                         };
-B_Conv curve_convs[4];
+/*
+static int curve_tl_inv[] = {
+                          -9, -9, -9,  1,  1,
+                          -9, -9,  3,  7,  7,
+                          -9,  3,  7,  3,  0,
+                           1,  7,  3,  0,  0,
+                           1,  7,  0,  0,  0,
+                        };
+*/
+#define NUM_CURVE_CONVS 4
+B_Conv curve_edge;
+B_Conv curve_convs[NUM_CURVE_CONVS];
 void alg_curvatureInit(void)
 {
+    curve_edge = B_Conv_new( curve_edge_mat, 1, 3, 3 );
     curve_convs[0] = B_Conv_new( curve_tl, 1, 5, 5 );
     curve_convs[1] = B_Conv_rotate( curve_convs[0] );
     curve_convs[2] = B_Conv_rotate( curve_convs[1] );
     curve_convs[3] = B_Conv_rotate( curve_convs[2] );
+    /*
+    curve_convs[4] = B_Conv_new( curve_tl_inv, 1, 5, 5 );
+    curve_convs[5] = B_Conv_rotate( curve_convs[4] );
+    curve_convs[6] = B_Conv_rotate( curve_convs[5] );
+    curve_convs[7] = B_Conv_rotate( curve_convs[6] );
+    */
 }
 void alg_curvatureDone(void)
 {
-    B_Conv_delete( curve_convs[0] );
-    B_Conv_delete( curve_convs[1] );
-    B_Conv_delete( curve_convs[2] );
-    B_Conv_delete( curve_convs[3] );
+    B_Conv_delete( curve_edge );
+    for( int i = 0; i < NUM_CURVE_CONVS; i++ )
+    {
+        B_Conv_delete( curve_convs[i] );
+    }
 }
 
 int alg_calculateCurvature( B_Image image )
 {
-    return alg_calculate( image, curve_convs, 4 );
+    // EDGE DETECT FIRST!!!!!!
+    B_Image edge = B_Conv_convolve( curve_edge, image );
+    int score = alg_calculate( edge, curve_convs, NUM_CURVE_CONVS );
+    B_Image_delete(edge);
+    return score;
 }
 //////////////////////////////
 

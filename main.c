@@ -101,8 +101,8 @@ int main(int argc, char *argv[])
     BT_Face face = BT_Face_new( &error, library, fontFilePath, 12);
 
     //convolveTest( face );
-    //algTest( face );
-    curveTest( face );
+    algTest( face );
+    //curveTest( face );
 
     // cleanup
     BT_Face_delete( face );
