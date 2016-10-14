@@ -80,7 +80,8 @@ B_Mask B_Mask_rotate( const B_Mask input )
     return mask;
 }
 
-B_Image B_Mask_convolve( B_Mask conv, const B_Image image )
+B_Image B_Mask_mask( const B_Mask conv, const B_Image image,
+                     int (*pixelOp)(const B_Mask, const B_Image, const int, const int) )
 {
     int width = B_Image_getWidth(image);
     int height = B_Image_getHeight(image);
@@ -93,7 +94,7 @@ B_Image B_Mask_convolve( B_Mask conv, const B_Image image )
         for( int col = 0; col < width; col++ )
         {
             // for each pixel convolve that shit
-            int pixel = B_Mask_convolvePixel( conv, image, row, col );
+            int pixel = pixelOp( conv, image, row, col );
             if( pixel > 255 )
                 pixel = 255;
             else if( pixel < 0 )
@@ -104,9 +105,70 @@ B_Image B_Mask_convolve( B_Mask conv, const B_Image image )
     return out;
 }
 
+B_Image B_Mask_convolve( const B_Mask conv, const B_Image image )
+{
+    return B_Mask_mask( conv, image, &B_Mask_convolvePixel);
+}
 
-int B_Mask_convolvePixel( B_Mask mask, const B_Image image,
+
+int B_Mask_convolvePixel( const B_Mask mask, const B_Image image,
                           const int row, const int col )
+{
+    int height = mask->height;
+    int width = mask->width;
+
+    int midRow = mask->height / 2;
+
+    int iHeight = B_Image_getHeight( image );
+    int iWidth = B_Image_getWidth( image );
+
+    int sum = 0;
+
+    int srcRow = 0; // source row to get image pixel
+    int srcCol = 0; // source col to get image pixel
+    int coefSum = 0;
+
+    for( int cRow = height-1, iRow = row-midRow; cRow >= 0; cRow--, iRow++ )
+    {
+        // extend the borders
+        if( iRow < 0 )
+            srcRow = 0;
+        else if( iRow >= iHeight )
+            srcRow = iHeight-1;
+        else    // inside the image
+            srcRow = iRow;
+
+        for( int cCol = width-1, iCol = col-midRow; cCol >= 0; cCol--, iCol++ )
+        {
+            // for each cell in the conv
+            if( iCol < 0 )
+                srcCol = 0;
+            else if( iCol >= iWidth )
+                srcCol = iWidth-1;
+            else
+                srcCol = iCol;
+
+            int cellVal = B_MASK_CELL(mask,cRow,cCol);
+            int pixelVal = (B_Image_getPixel( image, srcCol, srcRow )&0xFF);
+
+            sum += cellVal * pixelVal;
+            coefSum += cellVal<0?-cellVal:cellVal;
+        }
+    }
+
+    sum /= mask->divisor;       // divide by the divisor part
+    sum /= coefSum?coefSum:1;   // divide by the coefficients
+    return sum;
+}
+
+B_Image B_Mask_correlate( const B_Mask conv, const B_Image image )
+{
+    return B_Mask_mask( conv, image, &B_Mask_correlatePixel);
+}
+
+
+int B_Mask_correlatePixel( const B_Mask mask, const B_Image image,
+                           const int row, const int col )
 {
     int height = mask->height;
     int width = mask->width;

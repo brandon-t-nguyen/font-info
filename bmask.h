@@ -22,7 +22,7 @@ void B_Mask_delete( B_Mask mask );
 
 /**
  * Returns a new B_Mask that is the input transposed
- * @param input The input convolution
+ * @param input The input mask
  * @return Rotated convolution
  */
 B_Mask B_Mask_transpose( const B_Mask input );
@@ -34,21 +34,40 @@ B_Mask B_Mask_rotate( const B_Mask input );
 
 /**
  * Returns a B_Image of the convolved image
- * @param mask The convolution
+ * @param mask The mask
  * @param image The input image
  * @return The output, convolved image
  */
-B_Image B_Mask_convolve( B_Mask mask, const B_Image image );
+B_Image B_Mask_convolve( const B_Mask mask, const B_Image image );
 
 /**
  * Returns the integer value of the convolution of a single pixel
- * @param mask The Convolution object
+ * @param mask The Mask object
  * @param image The Image object
  * @param row The row of the pixel to convolve
  * @param col The col of the pixel to convolve
  */
-int B_Mask_convolvePixel( B_Mask mask, const B_Image image,
+int B_Mask_convolvePixel( const B_Mask mask, const B_Image image,
                           const int row, const int col );
+
+/**
+ * Returns a B_Image of the correlated image
+ * @param mask The mask
+ * @param image The input image
+ * @return The output, correlated image
+ */
+B_Image B_Mask_correlate( const B_Mask mask, const B_Image image );
+
+/**
+ * Returns the integer value of the convolution of a single pixel
+ * @param mask The Mask object
+ * @param image The Image object
+ * @param row The row of the pixel to correlate
+ * @param col The col of the pixel to correlate
+ */
+int B_Mask_correlatePixel( const B_Mask mask, const B_Image image,
+                           const int row, const int col );
+
 
 
 #endif //__B_MASK_H__
