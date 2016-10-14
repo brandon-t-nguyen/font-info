@@ -7,7 +7,7 @@ EXECUTABLE = font-info
 #TESTFONT = /usr/share/fonts/TTF/DejaVuSans.ttf
 #TESTFONT = ~/google-fonts/apache/roboto/Roboto-Regular.ttf
 #TESTFONT = ~/google-fonts/ofl/pacifico/Pacifico.ttf
-TESTFONT = ~/google-fonts/ofl/sacramento/Sacramento-Regular.ttf
+#TESTFONT = ~/google-fonts/ofl/sacramento/Sacramento-Regular.ttf
 #TESTFONT = ~/google-fonts/ofl/strait/Strait-Regular.ttf
 
 build: $(OBJECTS)

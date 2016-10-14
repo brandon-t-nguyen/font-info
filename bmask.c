@@ -1,11 +1,11 @@
 #include <stdlib.h>
 #include <string.h>
-#include "bconv.h"
+#include "bmask.h"
 
-#define B_CONV_INDEX(m,r,c) (c + r*(m->width))
-#define B_CONV_CELL(m,r,c) ( m->matrix[B_CONV_INDEX(m,r,c)] )
+#define B_MASK_INDEX(m,r,c) (c + r*(m->width))
+#define B_MASK_CELL(m,r,c) ( m->matrix[B_MASK_INDEX(m,r,c)] )
 
-struct B_Conv_Rec_str
+struct B_Mask_Rec_str
 {
     int *matrix;
     int divisor;
@@ -13,39 +13,39 @@ struct B_Conv_Rec_str
     int height;
 };
 
-B_Conv B_Conv_new( const int matrix[], const int divisor,
+B_Mask B_Mask_new( const int matrix[], const int divisor,
                    const int width, const int height )
 {
     if( !(width % 2) && !(height % 2) )
     {
         return NULL;
     }
-    B_Conv conv = (B_Conv) malloc( sizeof(B_Conv_Rec) );
-    conv->width = width;
-    conv->height = height;
-    conv->matrix = (int *) malloc( sizeof(int) * width * height );
-    conv->matrix = memcpy( conv->matrix, matrix, sizeof(float)*width*height );
-    conv->divisor = divisor;
-    return conv;
+    B_Mask mask = (B_Mask) malloc( sizeof(B_Mask_Rec) );
+    mask->width = width;
+    mask->height = height;
+    mask->matrix = (int *) malloc( sizeof(int) * width * height );
+    mask->matrix = memcpy( mask->matrix, matrix, sizeof(float)*width*height );
+    mask->divisor = divisor;
+    return mask;
 }
 
-void B_Conv_delete( B_Conv conv )
+void B_Mask_delete( B_Mask mask )
 {
-    free( conv->matrix );
-    free( conv );
+    free( mask->matrix );
+    free( mask );
 }
 
 
-B_Conv B_Conv_transpose( const B_Conv input )
+B_Mask B_Mask_transpose( const B_Mask input )
 {
-    B_Conv conv = (B_Conv) malloc( sizeof(B_Conv_Rec) );
-    conv->width = input->height;
-    conv->height = input->width;
-    conv->matrix = (int *) malloc( sizeof(int) * conv->width * conv->height );
-    conv->divisor = input->divisor;
+    B_Mask mask = (B_Mask) malloc( sizeof(B_Mask_Rec) );
+    mask->width = input->height;
+    mask->height = input->width;
+    mask->matrix = (int *) malloc( sizeof(int) * mask->width * mask->height );
+    mask->divisor = input->divisor;
     // transfer values
     int *iMatrix = input->matrix;
-    int *cMatrix = conv->matrix;
+    int *cMatrix = mask->matrix;
     int iWidth = input->width;
     int iHeight = input->height;
     for( int iRow = 0; iRow < iWidth; iRow++ )
@@ -55,15 +55,15 @@ B_Conv B_Conv_transpose( const B_Conv input )
             cMatrix[ iCol * iHeight + iRow ] = iMatrix[ iRow * iWidth + iCol];
         }
     }
-    return conv;
+    return mask;
 }
 
-B_Conv B_Conv_rotate( const B_Conv input )
+B_Mask B_Mask_rotate( const B_Mask input )
 {
     // transpose
-    B_Conv conv = B_Conv_transpose( input );
+    B_Mask mask = B_Mask_transpose( input );
     // for each row
-    int *matrix = conv->matrix;
+    int *matrix = mask->matrix;
     int height = input->height;
     int width = input->width;
     for( int r = 0; r < height; r++ )
@@ -77,10 +77,10 @@ B_Conv B_Conv_rotate( const B_Conv input )
             matrix[ r*width + cB ] = temp;
         }
     }
-    return conv;
+    return mask;
 }
 
-B_Image B_Conv_convolve( B_Conv conv, const B_Image image )
+B_Image B_Mask_convolve( B_Mask conv, const B_Image image )
 {
     int width = B_Image_getWidth(image);
     int height = B_Image_getHeight(image);
@@ -93,7 +93,7 @@ B_Image B_Conv_convolve( B_Conv conv, const B_Image image )
         for( int col = 0; col < width; col++ )
         {
             // for each pixel convolve that shit
-            int pixel = B_Conv_convolvePixel( conv, image, row, col );
+            int pixel = B_Mask_convolvePixel( conv, image, row, col );
             if( pixel > 255 )
                 pixel = 255;
             else if( pixel < 0 )
@@ -105,13 +105,13 @@ B_Image B_Conv_convolve( B_Conv conv, const B_Image image )
 }
 
 
-int B_Conv_convolvePixel( B_Conv conv, const B_Image image,
+int B_Mask_convolvePixel( B_Mask mask, const B_Image image,
                           const int row, const int col )
 {
-    int height = conv->height;
-    int width = conv->width;
+    int height = mask->height;
+    int width = mask->width;
 
-    int midRow = conv->height / 2;
+    int midRow = mask->height / 2;
 
     int iHeight = B_Image_getHeight( image );
     int iWidth = B_Image_getWidth( image );
@@ -142,7 +142,7 @@ int B_Conv_convolvePixel( B_Conv conv, const B_Image image,
             else
                 srcCol = iCol;
 
-            int cellVal = B_CONV_CELL(conv,cRow,cCol);
+            int cellVal = B_MASK_CELL(mask,cRow,cCol);
             int pixelVal = (B_Image_getPixel( image, srcCol, srcRow )&0xFF);
 
             sum += cellVal * pixelVal;
@@ -150,7 +150,7 @@ int B_Conv_convolvePixel( B_Conv conv, const B_Image image,
         }
     }
 
-    sum /= conv->divisor;       // divide by the divisor part
+    sum /= mask->divisor;       // divide by the divisor part
     sum /= coefSum?coefSum:1;   // divide by the coefficients
     return sum;
 }

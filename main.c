@@ -4,7 +4,7 @@
 
 #include "btypeface.h"
 #include "bimage.h"
-#include "bconv.h"
+#include "bmask.h"
 #include "alg.h"
 
 const int id[] = { 0,0,0,
@@ -54,12 +54,12 @@ void algTest(BT_Face face)
 
 void convolveTest(BT_Face face)
 {
-    B_Conv conv = B_Conv_new( curve, 1, 5, 5 );
+    B_Mask mask = B_Mask_new( curve, 1, 5, 5 );
     B_Image image = BT_Face_renderChar( face, 'a' );
     printf("Before convolution:\n");
     B_Image_fprint( image, stdout );
 
-    B_Image convImage = B_Conv_convolve( conv, image );
+    B_Image convImage = B_Mask_convolve( mask , image );
     printf("After convolution:\n");
     B_Image_fprint( convImage, stdout );
 
