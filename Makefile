@@ -26,7 +26,7 @@ test: $(EXECUTABLE)
 	./$(EXECUTABLE) $(TESTFONT)
 
 mem:
-	valgrind -v --leak-check=yes ./$(EXECUTABLE) $(TESTFONT)
+	valgrind -v --leak-check=yes --undef-value-errors=no ./$(EXECUTABLE) $(TESTFONT)
 
 debug:
 	gdb --args ./$(EXECUTABLE) ${arg} $(TESTFONT)
