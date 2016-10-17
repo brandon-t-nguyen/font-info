@@ -79,8 +79,6 @@ void curveTest(BT_Face face)
 
 int main(int argc, char *argv[])
 {
-    FT_Error error;
-
     printf("Hello, freetype!\n");
 
     if( !(argc >= 2) )
@@ -90,15 +88,8 @@ int main(int argc, char *argv[])
     }
     const char *fontFilePath = argv[1];
 
-    FT_Library library;
-    error = FT_Init_FreeType( &library );
-    if( error )
-    {
-        fprintf(stderr,"Problem occurred during freetype library initialization");
-        exit(1);
-    }
-
-    BT_Face face = BT_Face_new( &error, library, fontFilePath, 12);
+    BT_Error error;
+    BT_Face face = BT_Face_new( &error, fontFilePath, 12);
 
     //convolveTest( face );
     algTest( face );
@@ -106,6 +97,5 @@ int main(int argc, char *argv[])
 
     // cleanup
     BT_Face_delete( face );
-    FT_Done_FreeType( library );
 }
 

@@ -21,25 +21,41 @@ static int BT_glyphHash( int charCode )
     return (charCode - FIRST_GLYPH);
 }
 
-BT_Face BT_Face_new( FT_Error *errorHandle, FT_Library lib, const char * fontFilePath, int pointSize )
+
+static FT_Library lib = NULL;
+static int libRefCount = 0;
+
+BT_Face BT_Face_new( BT_Error *errorHandle, const char * fontFilePath, int pointSize )
 {
-    *errorHandle = FT_Err_Ok;
+    *errorHandle = BT_Err_Ok;
 
     // setup our FT face
     FT_Face ft_face;
-    *errorHandle = FT_New_Face( lib, fontFilePath, 0, &ft_face );
-    if( *errorHandle == FT_Err_Unknown_File_Format )
+    FT_Error ft_error;
+
+    // singleton FT_Library
+    if( !lib )
     {
+        ft_error = FT_Init_FreeType( &lib );
+        ++libRefCount;
+    }
+
+
+    ft_error = FT_New_Face( lib, fontFilePath, 0, &ft_face );
+    if( ft_error == FT_Err_Unknown_File_Format )
+    {
+        *errorHandle = BT_Err_Unknown_File_Format;
         fprintf(stderr, "Unable to load font face\"%s\": unknown format\n", fontFilePath);
         return NULL;
     }
-    else if(*errorHandle)
+    else if(ft_error)
     {
-        fprintf(stderr, "Unable to load loading font face\"%s\": unknown *errorHandle\n", fontFilePath);
+        *errorHandle = BT_Err_Unknown_Error;
+        fprintf(stderr, "Unable to load loading font face\"%s\": unknown ft_error\n", fontFilePath);
         return NULL;
     }
 
-    *errorHandle = FT_Set_Char_Size( ft_face, 0, point(pointSize), DPI, DPI);
+    ft_error = FT_Set_Char_Size( ft_face, 0, point(pointSize), DPI, DPI);
 
     BT_Face face = malloc(sizeof(BT_Face_Rec));
     face->lib = lib;
@@ -49,25 +65,28 @@ BT_Face BT_Face_new( FT_Error *errorHandle, FT_Library lib, const char * fontFil
     for( int c = FIRST_GLYPH; c <= LAST_GLYPH; c++ )
     {
         // load and extract the glyph from the slot
-        *errorHandle = FT_Load_Char( ft_face, c, FT_LOAD_DEFAULT );
-        if( *errorHandle )
+        ft_error = FT_Load_Char( ft_face, c, FT_LOAD_DEFAULT );
+        if( ft_error )
         {
+            *errorHandle = BT_Err_Load_Char;
             free(face);
             fprintf(stderr, "Unable to load char '%c' of font face \"%s\"", c, fontFilePath);
             return NULL;
         }
-        *errorHandle = FT_Get_Glyph( ft_face->glyph, &face->glyphs[BT_glyphHash(c)]);
-        if( *errorHandle )
+        ft_error = FT_Get_Glyph( ft_face->glyph, &face->glyphs[BT_glyphHash(c)]);
+        if( ft_error )
         {
+            *errorHandle = BT_Err_Cache_Char;
             free(face);
             fprintf(stderr, "Unable to cache char '%c' of font face \"%s\"", c, fontFilePath);
             return NULL;
         }
 
         // render
-        *errorHandle = FT_Glyph_To_Bitmap( &face->glyphs[BT_glyphHash(c)], FT_RENDER_MODE_NORMAL, 0, 1 );
-        if ( *errorHandle )
+        ft_error = FT_Glyph_To_Bitmap( &face->glyphs[BT_glyphHash(c)], FT_RENDER_MODE_NORMAL, 0, 1 );
+        if ( ft_error )
         {
+            *errorHandle = BT_Err_Render_Char;
             free(face);
             fprintf(stderr, "Unable to render char '%c' of font face \"%s\"", c, fontFilePath);
             return NULL;
@@ -85,6 +104,15 @@ void BT_Face_delete( BT_Face face )
     }
     FT_Done_Face( face->face );
     free(face);
+
+    --libRefCount;
+    if( libRefCount == 0 )
+    {
+        FT_Done_FreeType( lib );
+        lib = NULL;
+    }
+
+
 }
 
 FT_Glyph BT_Face_getGlyph( BT_Face face, int charcode )
@@ -176,6 +204,7 @@ B_Image BT_Face_renderString( BT_Face face, const char * string )
 }
 
 
+// internal: needed for renderChar
 B_Image BT_Face_renderGlyph( const FT_Glyph glyph )
 {
     FT_BitmapGlyph bitmapGlyph = (FT_BitmapGlyph)glyph;
@@ -191,25 +220,4 @@ B_Image BT_Face_renderChar( BT_Face face, const int code )
 {
     B_Image image = BT_Face_renderGlyph( face->glyphs[BT_glyphHash(code)] );
     return image;
-}
-
-/////////////////////////////////////////////////////////
-void BT_Print_Glyph( FT_Glyph glyph )
-{
-    BT_Print_Bitmap( &((FT_BitmapGlyph)glyph)->bitmap );
-}
-void BT_Print_Bitmap( FT_Bitmap *bitmap )
-{
-    FT_Int maxX = bitmap->width;
-    FT_Int maxY = bitmap->rows;
-
-    // flipped!
-    for( FT_Int y = 0; y < maxY; y++ )
-    {
-        for( FT_Int x = 0; x < maxX; x++ )
-        {
-            putchar(grayToAscii(bitmap->buffer[ y * maxX + x ]));
-        }
-        putchar('\n');
-    }
 }

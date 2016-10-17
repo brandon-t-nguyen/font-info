@@ -28,7 +28,18 @@
 typedef struct BT_Face_Rec_str BT_Face_Rec;
 typedef BT_Face_Rec * BT_Face;
 
-BT_Face BT_Face_new( FT_Error *errorHandle, FT_Library lib, const char * fontFilePath, int pointSize );
+typedef enum BT_Err_enum
+{
+    BT_Err_Ok,
+    BT_Err_Unknown_File_Format,
+    BT_Err_Set_Char_Size,
+    BT_Err_Load_Char,
+    BT_Err_Cache_Char,
+    BT_Err_Render_Char,
+    BT_Err_Unknown_Error
+} BT_Error;
+
+BT_Face BT_Face_new( BT_Error *errorHandle, const char * fontFilePath, int pointSize );
 void BT_Face_delete( BT_Face face );
 FT_Glyph BT_Face_getGlyph( BT_Face face, int charcode );
 
@@ -47,11 +58,5 @@ B_Image BT_Face_renderGlyph( const FT_Glyph glyph );
  * Creates a B_Image from a char
  */
 B_Image BT_Face_renderChar( BT_Face face, const int code );
-
-/**
- *
- */
-void BT_Print_Bitmap( FT_Bitmap *bitmap );
-void BT_Print_Glyph( FT_Glyph glyph);
 
 #endif //__BTYPEFACE_H__
