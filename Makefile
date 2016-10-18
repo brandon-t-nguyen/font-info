@@ -8,7 +8,9 @@ EXECUTABLE = font-info
 #TESTFONT = ~/google-fonts/apache/roboto/Roboto-Regular.ttf
 #TESTFONT = ~/google-fonts/ofl/pacifico/Pacifico.ttf
 #TESTFONT = ~/google-fonts/ofl/sacramento/Sacramento-Regular.ttf
-TESTFONT = ~/google-fonts/ofl/strait/Strait-Regular.ttf
+#TESTFONT = ~/google-fonts/ofl/strait/Strait-Regular.ttf
+#TESTFONT = ~/google-fonts/ofl/amita/Amita-Regular.ttf
+TESTFONT = ~/google-fonts/ofl/aldrich/Aldrich-Regular.ttf
 
 build: $(OBJECTS)
 	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(SOURCES) 
