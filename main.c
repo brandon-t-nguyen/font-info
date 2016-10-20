@@ -77,8 +77,45 @@ void curveTest(BT_Face face)
     alg_done();
 }
 
+void doAll(int argc, char *argv[])
+{
+    alg_init();
+    for(int i = 1; i < argc; i++)
+    {
+        char *fontFilePath = argv[i];
+        char *name = fontFilePath + strlen(fontFilePath)-1;
+        while( *name != '/' && name >= fontFilePath)
+        {
+            --name;
+        }
+        name++;
+
+        BT_Error error;
+        BT_Face face = BT_Face_new( &error, fontFilePath, 12);
+        if( !face )
+        {
+            fprintf(stderr, "What the fuck, couldn't make it!\n");
+            continue;
+        }
+        int cscore = 0;
+        for( int c = '!'; c <= '~'; c++ )
+        {
+            B_Image character = BT_Face_renderChar( face, c );
+            cscore += alg_calculateCurvature(character);
+            B_Image_delete( character );
+        }
+        cscore /= ('~'-'!'+1);   // average
+        printf("%s,%d\n",name,cscore);
+
+        BT_Face_delete( face );
+    }
+    alg_done();
+}
+
 int main(int argc, char *argv[])
 {
+    doAll(argc, argv);
+    /*
     printf("Hello, freetype!\n");
 
     if( !(argc >= 2) )
@@ -97,5 +134,6 @@ int main(int argc, char *argv[])
 
     // cleanup
     BT_Face_delete( face );
+    */
 }
 

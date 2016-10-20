@@ -28,6 +28,7 @@ int alg_calculate( B_Image image, B_Mask masks[], int numConvs )
         B_Image_delete(lol);
     }
     */
+    area = area>0?area:1;
     return score*1000/area;
 }
 
@@ -52,6 +53,7 @@ int alg_calculateAreaUsed( B_Image image )
                 calc++;
         }
     }
+    area = area>0?area:1;
     int fraction = calc * 10000 / area;
     return fraction;
 }

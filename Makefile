@@ -10,7 +10,8 @@ EXECUTABLE = font-info
 #TESTFONT = ~/google-fonts/ofl/sacramento/Sacramento-Regular.ttf
 #TESTFONT = ~/google-fonts/ofl/strait/Strait-Regular.ttf
 #TESTFONT = ~/google-fonts/ofl/amita/Amita-Regular.ttf
-TESTFONT = ~/google-fonts/ofl/aldrich/Aldrich-Regular.ttf
+#TESTFONT = ~/google-fonts/ofl/aldrich/Aldrich-Regular.ttf
+TESTFONT = ~/fonts/google/*.ttf
 
 build: $(OBJECTS)
 	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(SOURCES) 
