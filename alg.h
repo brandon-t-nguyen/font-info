@@ -24,6 +24,11 @@ Algorithm Alg_getInstance(void);
 void Alg_doneInstance( Algorithm alg );
 
 /**
+ * Releases the instance, reseting the Singleton pattern
+ */
+void Alg_releaseInstance(void);
+
+/**
  * Calculates the curvature of the image
  * @param image The image to calculate the curvature of
  * @return The curvature score
