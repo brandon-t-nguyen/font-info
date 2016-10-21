@@ -168,7 +168,7 @@ void Alg_doneInstance( Algorithm alg )
     }
 
     // delete if no more references
-    if( algRefCount == 0 && !algorithm )
+    if( algRefCount == 0 && algorithm )
     {
         Alg_releaseInstance();
     }
