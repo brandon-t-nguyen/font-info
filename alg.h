@@ -21,7 +21,7 @@ Algorithm Alg_getInstance(void);
  * Deletes the instance if no more references
  * @param alg The Algorithm instance
  */
-void Alg_deleteInstance( Algorithm alg );
+void Alg_doneInstance( Algorithm alg );
 
 /**
  * Calculates the curvature of the image

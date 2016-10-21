@@ -49,7 +49,7 @@ void algTest(BT_Face face)
     printf("Straightness score: %d\n", sscore);
     printf("Area used score: %d\n", ascore);
 
-    Alg_deleteInstance(alg);
+    Alg_doneInstance(alg);
 }
 
 void convolveTest(BT_Face face)
@@ -74,7 +74,7 @@ void curveTest(BT_Face face)
     B_Image image = BT_Face_renderChar( face, 'A' );
     Alg_calculateCurvature(alg, image);
     B_Image_delete( image );
-    Alg_deleteInstance(alg);
+    Alg_doneInstance(alg);
 }
 
 void doAll(int argc, char *argv[])
@@ -109,7 +109,7 @@ void doAll(int argc, char *argv[])
 
         BT_Face_delete( face );
     }
-    Alg_deleteInstance(alg);
+    Alg_doneInstance(alg);
 }
 
 int main(int argc, char *argv[])

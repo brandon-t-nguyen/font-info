@@ -147,7 +147,7 @@ Algorithm Alg_getInstance(void)
 {
     if( !algorithm )
     {
-        // new instace!
+        // new instance!
         algRefCount = 0;
         algorithm = malloc(sizeof(Algorithm_Rec));
         Alg_init( algorithm );
@@ -156,7 +156,7 @@ Algorithm Alg_getInstance(void)
     return algorithm;
 }
 
-void Alg_deleteInstance( Algorithm alg )
+void Alg_doneInstance( Algorithm alg )
 {
     // Check if correct pointer
     if( alg != algorithm )
