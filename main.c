@@ -30,16 +30,16 @@ const int curve[] = {
 
 void algTest(BT_Face face)
 {
-    alg_init();
+    Algorithm alg = Alg_getInstance();
     int cscore = 0;
     int sscore = 0;
     int ascore = 0;
     for( int c = '!'; c <= '~'; c++ )
     {
         B_Image character = BT_Face_renderChar( face, c );
-        cscore += alg_calculateCurvature(character);
-        sscore += alg_calculateStraightness(character);
-        ascore += alg_calculateAreaUsed(character);
+        cscore += Alg_calculateCurvature(alg, character);
+        sscore += Alg_calculateStraightness(alg, character);
+        ascore += Alg_calculateAreaUsed(alg, character);
         B_Image_delete( character );
     }
     cscore /= ('~'-'!'+1);   // average
@@ -49,7 +49,7 @@ void algTest(BT_Face face)
     printf("Straightness score: %d\n", sscore);
     printf("Area used score: %d\n", ascore);
 
-    alg_done();
+    Alg_deleteInstance(alg);
 }
 
 void convolveTest(BT_Face face)
@@ -70,16 +70,16 @@ void convolveTest(BT_Face face)
 
 void curveTest(BT_Face face)
 {
-    alg_init();
+    Algorithm alg = Alg_getInstance();
     B_Image image = BT_Face_renderChar( face, 'A' );
-    alg_calculateCurvature(image);
+    Alg_calculateCurvature(alg, image);
     B_Image_delete( image );
-    alg_done();
+    Alg_deleteInstance(alg);
 }
 
 void doAll(int argc, char *argv[])
 {
-    alg_init();
+    Algorithm alg = Alg_getInstance();
     for(int i = 1; i < argc; i++)
     {
         char *fontFilePath = argv[i];
@@ -101,7 +101,7 @@ void doAll(int argc, char *argv[])
         for( int c = '!'; c <= '~'; c++ )
         {
             B_Image character = BT_Face_renderChar( face, c );
-            cscore += alg_calculateCurvature(character);
+            cscore += Alg_calculateCurvature(alg, character);
             B_Image_delete( character );
         }
         cscore /= ('~'-'!'+1);   // average
@@ -109,7 +109,7 @@ void doAll(int argc, char *argv[])
 
         BT_Face_delete( face );
     }
-    alg_done();
+    Alg_deleteInstance(alg);
 }
 
 int main(int argc, char *argv[])

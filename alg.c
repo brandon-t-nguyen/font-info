@@ -1,8 +1,16 @@
+#include <stdlib.h>
 #include "alg.h"
 #include "bimage.h"
 #include "bmask.h"
 
-int alg_calculate( B_Image image, B_Mask masks[], int numConvs )
+struct Algorithm_Rec_str
+{
+    B_Mask edge;
+    B_Mask curve[4];
+    B_Mask straight[2];
+};
+
+static int Alg_calculate( B_Image image, B_Mask masks[], int numConvs )
 {
     int width = B_Image_getWidth( image );
     int height = B_Image_getHeight( image );
@@ -33,13 +41,13 @@ int alg_calculate( B_Image image, B_Mask masks[], int numConvs )
 }
 
 /////// Area Used    /////////
-void alg_areaUsedInit(void)
+static void Alg_areaUsedInit( Algorithm alg )
 {
 }
-void alg_areaUsedDone(void)
+static void Alg_areaUsedDone( Algorithm alg )
 {
 }
-int alg_calculateAreaUsed( B_Image image )
+int Alg_calculateAreaUsed( Algorithm alg, B_Image image )
 {
     int width = B_Image_getWidth( image );
     int height = B_Image_getHeight( image );
@@ -60,30 +68,23 @@ int alg_calculateAreaUsed( B_Image image )
 
 /////// Straightness /////////
 static int straight[] = { 1, 1, 1, 1, 1 };
-B_Mask straight_vert;
-B_Mask straight_horz;
-B_Mask straight_masks[2];
-void alg_straightnessInit(void)
+void Alg_straightnessInit( Algorithm alg )
 {
-    straight_masks[0] = B_Mask_new( straight, 1, 5, 1 );
-    straight_masks[1] = B_Mask_new( straight, 1, 1, 5 );
+    alg->straight[0] = B_Mask_new( straight, 1, 5, 1 );
+    alg->straight[1] = B_Mask_new( straight, 1, 1, 5 );
 }
-void alg_straightnessDone(void)
+void Alg_straightnessDone( Algorithm alg )
 {
-    B_Mask_delete( straight_masks[0] );
-    B_Mask_delete( straight_masks[1] );
+    B_Mask_delete( alg->straight[0] );
+    B_Mask_delete( alg->straight[1] );
 }
-int alg_calculateStraightness( B_Image image )
+int Alg_calculateStraightness( Algorithm alg, B_Image image )
 {
-    return alg_calculate( image, straight_masks, 2 );
+    return Alg_calculate( image, alg->straight, 2 );
 }
 
 ///////   Curvature  /////////
-static int curve_edge_mat[] = {
-                               -1, -1, -1,
-                               -1,  8, -1,
-                               -1, -1, -1,
-                          };
+
 static int curve_tl[] = {
                           -9, -9, -9,  1,  1,
                           -9, -9,  3,  7,  7,
@@ -91,63 +92,86 @@ static int curve_tl[] = {
                            1,  7,  3, -9, -9,
                            1,  7, -9, -9, -9,
                         };
-/*
-static int curve_tl_inv[] = {
-                          -9, -9, -9,  1,  1,
-                          -9, -9,  3,  7,  7,
-                          -9,  3,  7,  3,  0,
-                           1,  7,  3,  0,  0,
-                           1,  7,  0,  0,  0,
-                        };
-*/
 #define NUM_CURVE_MASKS 4
-B_Mask curve_edge;
-B_Mask curve_masks[NUM_CURVE_MASKS];
-void alg_curvatureInit(void)
+static void Alg_curvatureInit( Algorithm alg )
 {
-    curve_edge = B_Mask_new( curve_edge_mat, 1, 3, 3 );
-    curve_masks[0] = B_Mask_new( curve_tl, 1, 5, 5 );
-    curve_masks[1] = B_Mask_rotate( curve_masks[0] );
-    curve_masks[2] = B_Mask_rotate( curve_masks[1] );
-    curve_masks[3] = B_Mask_rotate( curve_masks[2] );
-    /*
-    curve_masks[4] = B_Mask_new( curve_tl_inv, 1, 5, 5 );
-    curve_masks[5] = B_Mask_rotate( curve_masks[4] );
-    curve_masks[6] = B_Mask_rotate( curve_masks[5] );
-    curve_masks[7] = B_Mask_rotate( curve_masks[6] );
-    */
+    alg->curve[0] = B_Mask_new( curve_tl, 1, 5, 5 );
+    alg->curve[1] = B_Mask_rotate( alg->curve[0] );
+    alg->curve[2] = B_Mask_rotate( alg->curve[1] );
+    alg->curve[3] = B_Mask_rotate( alg->curve[2] );
 }
-void alg_curvatureDone(void)
+static void Alg_curvatureDone( Algorithm alg )
 {
-    B_Mask_delete( curve_edge );
     for( int i = 0; i < NUM_CURVE_MASKS; i++ )
     {
-        B_Mask_delete( curve_masks[i] );
+        B_Mask_delete( alg->curve[i] );
     }
 }
 
-int alg_calculateCurvature( B_Image image )
+int Alg_calculateCurvature( Algorithm alg, B_Image image )
 {
-    // EDGE DETECT FIRST!!!!!!
-    B_Image edge = B_Mask_convolve( curve_edge, image );
-    int score = alg_calculate( edge, curve_masks, NUM_CURVE_MASKS );
+    B_Image edge = B_Mask_convolve( alg->edge, image );
+    int score = Alg_calculate( edge, alg->curve, NUM_CURVE_MASKS );
     B_Image_delete(edge);
     return score;
 }
 //////////////////////////////
 
-void alg_init(void)
+static Algorithm algorithm = NULL;
+static int algRefCount = 0;
+
+static int edge_mat[] = {
+                             -1, -1, -1,
+                             -1,  8, -1,
+                             -1, -1, -1,
+                        };
+
+
+static void Alg_init( Algorithm alg )
 {
-    alg_curvatureInit();
-    alg_straightnessInit();
-    alg_areaUsedInit();
+    alg->edge = B_Mask_new( edge_mat, 1, 3, 3 );
+    Alg_curvatureInit( alg );
+    Alg_straightnessInit( alg );
+    Alg_areaUsedInit( alg );
 }
 
-void alg_done(void)
+static void Alg_done( Algorithm alg )
 {
-    alg_curvatureDone();
-    alg_straightnessDone();
-    alg_areaUsedDone();
+    B_Mask_delete( alg->edge );
+    Alg_curvatureDone( alg );
+    Alg_straightnessDone( alg );
+    Alg_areaUsedDone( alg );
 }
 
+Algorithm Alg_getInstance(void)
+{
+    if( !algorithm )
+    {
+        // new instace!
+        algRefCount = 0;
+        algorithm = malloc(sizeof(Algorithm_Rec));
+        Alg_init( algorithm );
+    }
+    ++algRefCount;
+    return algorithm;
+}
 
+void Alg_deleteInstance( Algorithm alg )
+{
+    // Check if correct pointer
+    if( alg != algorithm )
+        return;
+
+    if( algRefCount > 0 )
+    {
+        --algRefCount;
+    }
+
+    // delete if no more references
+    if( algRefCount == 0 && !algorithm )
+    {
+        Alg_done( algorithm );
+        algorithm = NULL;
+        algRefCount = 0;
+    }
+}
