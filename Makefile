@@ -3,14 +3,12 @@ LD = ld
 CFLAGS =-Wall -Wextra -Wno-unused-parameter -g -I/usr/include/freetype2 -lfreetype
 SOURCES = *.c
 EXECUTABLE = font-info
-#TESTFONT = /usr/share/fonts/TTF/Oxygen-Sans.ttf
-#TESTFONT = /usr/share/fonts/TTF/DejaVuSans.ttf
-#TESTFONT = ~/google-fonts/apache/roboto/Roboto-Regular.ttf
-#TESTFONT = ~/google-fonts/ofl/pacifico/Pacifico.ttf
-#TESTFONT = ~/google-fonts/ofl/sacramento/Sacramento-Regular.ttf
-#TESTFONT = ~/google-fonts/ofl/strait/Strait-Regular.ttf
-TESTFONT = ~/google-fonts/ofl/amita/Amita-Regular.ttf
-#TESTFONT = ~/google-fonts/ofl/aldrich/Aldrich-Regular.ttf
+TESTFONT = ~/fonts/google/Roboto-Regular.ttf
+#TESTFONT = ~/fonts/google/Pacifico.ttf
+#TESTFONT = ~/fonts/google/Sacramento-Regular.ttf
+#TESTFONT = ~/fonts/google/Strait-Regular.ttf
+#TESTFONT = ~/fonts/google/Amita-Regular.ttf
+#TESTFONT = ~/fonts/google/Aldrich-Regular.ttf
 #TESTFONT = ~/fonts/google/*.ttf
 
 build: $(OBJECTS)
