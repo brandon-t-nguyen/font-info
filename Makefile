@@ -1,6 +1,6 @@
 CC = gcc
 LD = ld
-CFLAGS =-Wall -Wextra -g -I/usr/include/freetype2 -lfreetype
+CFLAGS =-Wall -Wextra -Wno-unused-parameter -g -I/usr/include/freetype2 -lfreetype
 SOURCES = *.c
 EXECUTABLE = font-info
 #TESTFONT = /usr/share/fonts/TTF/Oxygen-Sans.ttf
@@ -9,9 +9,9 @@ EXECUTABLE = font-info
 #TESTFONT = ~/google-fonts/ofl/pacifico/Pacifico.ttf
 #TESTFONT = ~/google-fonts/ofl/sacramento/Sacramento-Regular.ttf
 #TESTFONT = ~/google-fonts/ofl/strait/Strait-Regular.ttf
-#TESTFONT = ~/google-fonts/ofl/amita/Amita-Regular.ttf
+TESTFONT = ~/google-fonts/ofl/amita/Amita-Regular.ttf
 #TESTFONT = ~/google-fonts/ofl/aldrich/Aldrich-Regular.ttf
-TESTFONT = ~/fonts/google/*.ttf
+#TESTFONT = ~/fonts/google/*.ttf
 
 build: $(OBJECTS)
 	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(SOURCES) 
