@@ -178,6 +178,7 @@ void Alg_releaseInstance(void)
     if( !algorithm )
         return;
     Alg_done( algorithm );
+    free(algorithm);
     algorithm = NULL;
     algRefCount = 0;
 }
