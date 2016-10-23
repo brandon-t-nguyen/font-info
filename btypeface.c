@@ -37,8 +37,8 @@ BT_Face BT_Face_new( BT_Error *errorHandle, const char * fontFilePath, int point
     if( !lib )
     {
         ft_error = FT_Init_FreeType( &lib );
-        ++libRefCount;
     }
+    ++libRefCount;
 
 
     ft_error = FT_New_Face( lib, fontFilePath, 0, &ft_face );
