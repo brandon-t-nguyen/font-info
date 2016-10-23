@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 {
     BT_Error error;
     #ifdef VISUALIZE
-    BT_Face face = BT_Face_new( &error, argv[0], 12);
+    BT_Face face = BT_Face_new( &error, argv[1], 12);
     visualize( face, 'A' );
     #else
     Algorithm alg = Alg_getInstance();

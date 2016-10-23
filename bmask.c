@@ -216,3 +216,21 @@ int B_Mask_correlatePixel( const B_Mask mask, const B_Image image,
     sum /= coefSum?coefSum:1;   // divide by the coefficients
     return sum;
 }
+
+int B_Mask_getWidth( const B_Mask mask )
+{
+    return mask->width;
+}
+int B_Mask_getHeight( const B_Mask mask )
+{
+    return mask->height;
+}
+int B_Mask_getDivisor( const B_Mask mask )
+{
+    return mask->divisor;
+}
+const int *  B_Mask_getMatrix( const B_Mask mask )
+{
+    return mask->matrix;
+}
+

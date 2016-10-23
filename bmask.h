@@ -68,6 +68,9 @@ B_Image B_Mask_correlate( const B_Mask mask, const B_Image image );
 int B_Mask_correlatePixel( const B_Mask mask, const B_Image image,
                            const int row, const int col );
 
-
+int B_Mask_getWidth( const B_Mask mask );
+int B_Mask_getHeight( const B_Mask mask );
+int B_Mask_getDivisor( const B_Mask mask );
+const int *  B_Mask_getMatrix( const B_Mask mask );
 
 #endif //__B_MASK_H__

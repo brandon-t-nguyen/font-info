@@ -4,11 +4,11 @@ CFLAGS =-Wall -Wextra -Wno-unused-parameter -g -I/usr/include/freetype2 -lfreety
 SOURCES = *.c
 EXECUTABLE = font-info
 VISUALIZE = vis
-TESTFONT = ~/fonts/google/Roboto-Regular.ttf
+#TESTFONT = ~/fonts/google/Roboto-Regular.ttf
 #TESTFONT = ~/fonts/google/Pacifico.ttf
 #TESTFONT = ~/fonts/google/Sacramento-Regular.ttf
 #TESTFONT = ~/fonts/google/Strait-Regular.ttf
-#TESTFONT = ~/fonts/google/Amita-Regular.ttf
+TESTFONT = ~/fonts/google/Amita-Regular.ttf
 #TESTFONT = ~/fonts/google/Aldrich-Regular.ttf
 #TESTFONT = ~/fonts/google/*.ttf
 
@@ -27,6 +27,9 @@ run: $(EXECUTABLE)
 
 test: $(EXECUTABLE)
 	./$(EXECUTABLE) $(TESTFONT)
+
+testvis: $(VISUALIZE)
+	./$(VISUALIZE) $(TESTFONT)
 
 mem:
 	valgrind -v --leak-check=yes --undef-value-errors=no ./$(EXECUTABLE) $(TESTFONT)
