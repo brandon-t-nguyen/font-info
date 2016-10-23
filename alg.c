@@ -66,23 +66,6 @@ int Alg_calculateAreaUsed( Algorithm alg, B_Image image )
     return fraction;
 }
 
-/////// Straightness /////////
-static int straight[] = { 1, 1, 1, 1, 1 };
-void Alg_straightnessInit( Algorithm alg )
-{
-    alg->straight[0] = B_Mask_new( straight, 1, 5, 1 );
-    alg->straight[1] = B_Mask_new( straight, 1, 1, 5 );
-}
-void Alg_straightnessDone( Algorithm alg )
-{
-    B_Mask_delete( alg->straight[0] );
-    B_Mask_delete( alg->straight[1] );
-}
-int Alg_calculateStraightness( Algorithm alg, B_Image image )
-{
-    return Alg_calculate( image, alg->straight, 2 );
-}
-
 ///////   Curvature  /////////
 
 static int curve_tl[] = {
@@ -131,7 +114,6 @@ static void Alg_init( Algorithm alg )
 {
     alg->edge = B_Mask_new( edge_mat, 1, 3, 3 );
     Alg_curvatureInit( alg );
-    Alg_straightnessInit( alg );
     Alg_areaUsedInit( alg );
 }
 
@@ -139,7 +121,6 @@ static void Alg_done( Algorithm alg )
 {
     B_Mask_delete( alg->edge );
     Alg_curvatureDone( alg );
-    Alg_straightnessDone( alg );
     Alg_areaUsedDone( alg );
 }
 
@@ -182,3 +163,5 @@ void Alg_releaseInstance(void)
     algorithm = NULL;
     algRefCount = 0;
 }
+
+

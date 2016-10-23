@@ -1,10 +1,26 @@
 #ifndef __ALG_H__
 #define __ALG_H__
 
+#include "btypeface.h"
 #include "bimage.h"
 
 typedef struct Algorithm_Rec_str Algorithm_Rec;
 typedef Algorithm_Rec * Algorithm;
+
+typedef enum Metric_enum
+{
+    Metric_Density,
+    Metric_Curve,
+    Metric_Angle,
+
+} Metric;
+
+typedef struct Metrics_str
+{
+    double density;
+    double curve;
+    double slant;
+} Metrics;
 
 /*
 void alg_init(void);
@@ -29,26 +45,15 @@ void Alg_doneInstance( Algorithm alg );
 void Alg_releaseInstance(void);
 
 /**
- * Calculates the curvature of the image
- * @param image The image to calculate the curvature of
- * @return The curvature score
+ * Calculates the value for a given metric
  */
-int Alg_calculateCurvature( Algorithm alg, B_Image image );
+double Alg_calculateMetric( const Algorithm alg, const BT_Face face, const Metric metric );
 
 /**
- * Calculates the straightness of the image
- * @param image The image to calculate the curvature of
- * @return The curvature score
+ * Calculates all metrics for a font
  */
-int Alg_calculateStraightness( Algorithm alg, B_Image image );
+void Alg_calculateMetrics( const Algorithm alg, const BT_Face face, Metrics * results );
 
-/**
- * Calculates a score based off of
- * the area used by the character:
- * area used divided by total area
- * @return 1/10000 fractionals
- */
-int Alg_calculateAreaUsed( Algorithm alg, B_Image image );
 
 #endif // __ALG_H__
 
