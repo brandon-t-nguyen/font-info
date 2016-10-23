@@ -14,6 +14,7 @@ TESTFONT = ~/fonts/google/Amita-Regular.ttf
 
 FONT1 = ~/fonts/google/Amita-Regular.ttf
 FONT2 = ~/fonts/google/Aldrich-Regular.ttf
+LETTER = S
 
 $(EXECUTABLE):
 	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(SOURCES) 
@@ -30,14 +31,15 @@ run: $(EXECUTABLE)
 
 test: $(EXECUTABLE)
 	./$(EXECUTABLE) $(TESTFONT)
-
-testvis: $(VISUALIZE)
-	./$(VISUALIZE) $(FONT1) $(FONT2) S
-
-mem:
+debug: $(EXECUTABLE)
+	gdb --args ./$(EXECUTABLE) ${arg} $(TESTFONT)
+mem: $(EXECUTABLE)
 	valgrind -v --leak-check=yes --undef-value-errors=no ./$(EXECUTABLE) $(TESTFONT)
 
 
-
-debug:
-	gdb --args ./$(EXECUTABLE) ${arg} $(TESTFONT)
+testvis: $(VISUALIZE)
+	./$(VISUALIZE) $(FONT1) $(FONT2) $(LETTER)
+debugvis: $(VISUALIZE)
+	gdb --args ./$(VISUALIZE) $(FONT1) $(FONT2) $(LETTER)
+memvis: $(VISUALIZE)
+	valgrind -v --leak-check=yes --undef-value-errors=no ./$(VISUALIZE) $(FONT1) $(FONT2) $(LETTER)
