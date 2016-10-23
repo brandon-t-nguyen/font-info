@@ -41,22 +41,15 @@ typedef enum BT_Err_enum
 
 BT_Face BT_Face_new( BT_Error *errorHandle, const char * fontFilePath, int pointSize );
 void BT_Face_delete( BT_Face face );
-FT_Glyph BT_Face_getGlyph( BT_Face face, int charcode );
-
 
 /**
  * Creates a B_Image from a string
  */
-B_Image BT_Face_renderString( BT_Face face, const char * string );
-
-/**
- * Creates a B_Image from a glyph
- */
-B_Image BT_Face_renderGlyph( const FT_Glyph glyph );
+//B_Image BT_Face_renderString( BT_Face face, const char * string );
 
 /**
  * Creates a B_Image from a char
  */
-B_Image BT_Face_renderChar( BT_Face face, const int code );
+B_Image BT_Face_getChar( const BT_Face face, const int code );
 
 #endif //__BTYPEFACE_H__
