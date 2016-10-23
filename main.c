@@ -7,17 +7,14 @@
 #include "bmask.h"
 #include "alg.h"
 
-void curveTest(BT_Face face)
+extern void visualize( BT_Face face, int charcode );
+int main(int argc, char *argv[])
 {
-    Algorithm alg = Alg_getInstance();
-    B_Image image = BT_Face_getChar( face, 'A' );
-    Alg_calculateCurvature(alg, image);
-    B_Image_delete( image );
-    Alg_doneInstance(alg);
-}
-
-void doAll(int argc, char *argv[])
-{
+    BT_Error error;
+    #ifdef VISUALIZE
+    BT_Face face = BT_Face_new( &error, argv[0], 12);
+    visualize( face, 'A' );
+    #else
     Algorithm alg = Alg_getInstance();
     for(int i = 1; i < argc; i++)
     {
@@ -29,29 +26,16 @@ void doAll(int argc, char *argv[])
         }
         name++;
 
-        BT_Error error;
         BT_Face face = BT_Face_new( &error, fontFilePath, 12);
         if( !face )
         {
             fprintf(stderr, "What the fuck, couldn't make it!\n");
             continue;
         }
-        int cscore = 0;
-        for( int c = '!'; c <= '~'; c++ )
-        {
-            B_Image character = BT_Face_getChar( face, c );
-            cscore += Alg_calculateCurvature(alg, character);
-        }
-        cscore /= ('~'-'!'+1);   // average
-        printf("%s,%d\n",name,cscore);
-
         BT_Face_delete( face );
     }
-    Alg_doneInstance(alg);
-}
 
-int main(int argc, char *argv[])
-{
-    doAll(argc, argv);
+    Alg_doneInstance(alg);
+    #endif
 }
 

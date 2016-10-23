@@ -3,6 +3,7 @@ LD = ld
 CFLAGS =-Wall -Wextra -Wno-unused-parameter -g -I/usr/include/freetype2 -lfreetype
 SOURCES = *.c
 EXECUTABLE = font-info
+VISUALIZE = vis
 TESTFONT = ~/fonts/google/Roboto-Regular.ttf
 #TESTFONT = ~/fonts/google/Pacifico.ttf
 #TESTFONT = ~/fonts/google/Sacramento-Regular.ttf
@@ -11,13 +12,14 @@ TESTFONT = ~/fonts/google/Roboto-Regular.ttf
 #TESTFONT = ~/fonts/google/Aldrich-Regular.ttf
 #TESTFONT = ~/fonts/google/*.ttf
 
-build: $(OBJECTS)
-	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(SOURCES) 
 $(EXECUTABLE):
-	make build
+	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(SOURCES) 
+
+$(VISUALIZE):
+	$(CC) $(CFLAGS) -lncurses -D VISUALIZE -o $(VISUALIZE) $(SOURCES)
 
 clean:
-	rm *.o $(EXECUTABLE) $(TESTLOG)
+	rm *.o $(EXECUTABLE) $(VISUALIZE) $(TESTLOG)
 
 
 run: $(EXECUTABLE)
@@ -28,6 +30,8 @@ test: $(EXECUTABLE)
 
 mem:
 	valgrind -v --leak-check=yes --undef-value-errors=no ./$(EXECUTABLE) $(TESTFONT)
+
+
 
 debug:
 	gdb --args ./$(EXECUTABLE) ${arg} $(TESTFONT)
