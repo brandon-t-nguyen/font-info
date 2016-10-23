@@ -12,6 +12,9 @@ TESTFONT = ~/fonts/google/Amita-Regular.ttf
 #TESTFONT = ~/fonts/google/Aldrich-Regular.ttf
 #TESTFONT = ~/fonts/google/*.ttf
 
+FONT1 = ~/fonts/google/Amita-Regular.ttf
+FONT2 = ~/fonts/google/Aldrich-Regular.ttf
+
 $(EXECUTABLE):
 	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(SOURCES) 
 
@@ -29,7 +32,7 @@ test: $(EXECUTABLE)
 	./$(EXECUTABLE) $(TESTFONT)
 
 testvis: $(VISUALIZE)
-	./$(VISUALIZE) $(TESTFONT)
+	./$(VISUALIZE) $(FONT1) $(FONT2) S
 
 mem:
 	valgrind -v --leak-check=yes --undef-value-errors=no ./$(EXECUTABLE) $(TESTFONT)

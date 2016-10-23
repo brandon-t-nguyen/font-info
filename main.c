@@ -7,13 +7,16 @@
 #include "bmask.h"
 #include "alg.h"
 
-extern void visualize( BT_Face face, int charcode );
+extern void visualize( BT_Face face1, BT_Face face2, int charcode );
 int main(int argc, char *argv[])
 {
     BT_Error error;
     #ifdef VISUALIZE
-    BT_Face face = BT_Face_new( &error, argv[1], 12);
-    visualize( face, 'A' );
+    BT_Face face1 = BT_Face_new( &error, argv[1], 12);
+    BT_Face face2 = BT_Face_new( &error, argv[2], 12);
+    visualize( face1, face2, argv[3][0] );
+    BT_Face_delete(face1);
+    BT_Face_delete(face2);
     #else
     Algorithm alg = Alg_getInstance();
     for(int i = 1; i < argc; i++)

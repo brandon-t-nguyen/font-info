@@ -73,6 +73,87 @@ void render( B_Image image, int row, int col )
     }
 }
 
+void compare2( B_Image image1, B_Image image2, B_Mask mask, int row, int col )
+{
+    int height1 = B_Image_getHeight( image1 );
+    int width1 = B_Image_getWidth( image1 );
+    int height2 = B_Image_getHeight( image2 );
+    int width2 = B_Image_getWidth( image2 );
+    int height = height1>height2?height1:height2;
+    int width = width1>width2?width1:width2;
+
+    struct timespec req = {0,50000000};
+    //struct timespec req = {0,5000000};
+    //struct timespec req = {0,10000000};
+    //struct timespec req = {0,500000};
+    struct timespec rem;
+
+    int image1R, image1C;
+    int image2R, image2C;
+    int base1R, base1C;
+    int base2R, base2C;
+
+
+
+    image1R = row+1;
+    image2R = image1R + height1 + 5;
+    image1C = col;
+    image2C = col;
+
+    base1R = image1R;
+    base2R = image2R;
+    base1C= col + width + 10;
+    base2C = base1C;
+
+    move(row,image1C);
+    printw("Before mask correlation:");
+
+    move(row,base1C);
+    printw("After mask correlation:");
+
+    for( int r = 0; r < height; r++ )
+    {
+        for( int c = 0; c < width; c++ )
+        {
+            if( c < width1 && r < height1 )
+            {
+                render(image1,image1R,image1C);
+                renderMask(mask, image1R+r, image1C+c, image1R, image1C, image1R+height1-1, col+width1-1 );
+
+                int pixel = B_Mask_correlatePixel( mask, image1, r, c);
+                if( pixel > 255 )
+                    pixel = 255;
+                else if( pixel < 0 )
+                    pixel = 0;
+
+                move(base1R+r,base1C+c);
+                addch(B_Image_grayToAscii(pixel));
+            }
+
+            if( c < width2 && r < height2 )
+            {
+                render(image2,image2R,image2C);
+                renderMask(mask, image2R+r, image2C+c, image2R, image2C, image2R+height2-1, col+width2-1 );
+
+                int pixel = B_Mask_correlatePixel( mask, image2, r, c);
+                if( pixel > 255 )
+                    pixel = 255;
+                else if( pixel < 0 )
+                    pixel = 0;
+
+                move(base2R+r,base2C+c);
+                addch(B_Image_grayToAscii(pixel));
+            }
+
+            nanosleep(&req,&rem);
+            refresh();
+            if( req.tv_nsec > 5000000)
+                req.tv_nsec -= 100000;
+        }
+    }
+    addch('\n');
+}
+
 void compare( B_Image image, B_Mask mask, int row, int col )
 {
     struct timespec req = {0,50000000};
@@ -128,7 +209,7 @@ void compare( B_Image image, B_Mask mask, int row, int col )
     addch('\n');
 }
 
-void visualize( BT_Face face, int charcode )
+void visualize( BT_Face face1, BT_Face face2, int charcode )
 {
     B_Mask curve = B_Mask_new( curve_tl, 1, 5, 5 );
     B_Mask edge = B_Mask_new( edge, 1, 3, 3 );
@@ -136,14 +217,10 @@ void visualize( BT_Face face, int charcode )
     initscr();
     printw("Hello World !!!");
 
-    const B_Image character = BT_Face_getChar( face, charcode );
+    const B_Image c1 = BT_Face_getChar( face1, charcode );
+    const B_Image c2  = BT_Face_getChar( face2, charcode );
 
-/*
-    B_Image outline = B_Mask_convolve( edge, character );
-    compare( outline, curve, 0, 0 );
-    B_Image_delete(outline);
-*/
-    compare( character, curve, 0, 0 );
+    compare2( c1, c2, curve, 0, 0 );
     getch();
     endwin();
 
