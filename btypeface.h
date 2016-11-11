@@ -28,6 +28,9 @@
 typedef struct BT_Face_Rec_str BT_Face_Rec;
 typedef BT_Face_Rec * BT_Face;
 
+typedef struct BT_Glyph_Rec_str BT_Glyph_Rec;
+typedef BT_Glyph_Rec * BT_Glyph;
+
 typedef enum BT_Err_enum
 {
     BT_Err_Ok,
@@ -54,5 +57,20 @@ const B_Image BT_Face_getChar( const BT_Face face, const int code );
  * Returns a B_Image from a char, edge detected
  */
 const B_Image BT_Face_getCharEdge( const BT_Face face, const int code );
+
+/**
+ * Returns a BT_Glyph from a char
+ */
+const BT_Glyph BT_Face_getGlyph( const BT_Face face, const int code );
+
+/**
+ * Returns B_Image from a glyph
+ */
+const B_Image BT_Glyph_getPlain( const BT_Glyph );
+
+/**
+ * Returns edge detected B_Image from a glyph
+ */
+const B_Image BT_Glyph_getEdge( const BT_Glyph );
 
 #endif //__BTYPEFACE_H__

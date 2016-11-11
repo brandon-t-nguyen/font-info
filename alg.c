@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "alg.h"
+#include "btypeface.h"
 #include "bimage.h"
 #include "bmask.h"
 
@@ -40,22 +41,16 @@ static double Alg_calculate( const B_Image image, B_Mask masks[], int numConvs )
 }
 
 // wrapper for doing operations that require entire glyph set
-static double Alg_CalcAll( Algorithm alg, const BT_Face face, int edge, double (*algorithm)( Algorithm, const B_Image ) )
+static double Alg_CalcAll( Algorithm alg, const BT_Face face, double (*algorithm)( Algorithm, const BT_Glyph ) )
 {
     double scoreTotal = 0.0;
     int num = 0;
     for( int c = FIRST_GLYPH; c <= LAST_GLYPH; c++ )
     {
-        B_Image image = NULL;
-
-        if(!edge)
-            image = BT_Face_getChar( face, c );
-        else
-            image = BT_Face_getCharEdge( face, c );
-
-        if( image )
+        const BT_Glyph glyph = BT_Face_getGlyph( face, c );
+        if( glyph )
         {
-            scoreTotal += algorithm( alg, image );
+            scoreTotal += algorithm( alg, glyph);
             ++num;
         }
     }
@@ -69,34 +64,37 @@ static double Alg_CalcAll( Algorithm alg, const BT_Face face, int edge, double (
 /////// Dimensional /////
 static void Alg_WidthInit( Algorithm alg ){}
 static void Alg_WidthDone( Algorithm alg ){}
-static double Alg_WidthAlg( Algorithm alg, const B_Image image )
+static double Alg_WidthAlg( Algorithm alg, const BT_Glyph glyph )
 {
+    const B_Image image = BT_Glyph_getPlain(glyph);
     double width = (double)B_Image_getWidth( image );
     // normalize
     return width / DIM_NORM;
 }
 static double Alg_WidthCalc( Algorithm alg, const BT_Face face )
 {
-    return Alg_CalcAll( alg, face, NOEDGE, &Alg_WidthAlg );
+    return Alg_CalcAll( alg, face, &Alg_WidthAlg );
 }
 
 static void Alg_HeightInit( Algorithm alg ){}
 static void Alg_HeightDone( Algorithm alg ){}
-static double Alg_HeightAlg( Algorithm alg, const B_Image image )
+static double Alg_HeightAlg( Algorithm alg, const BT_Glyph glyph )
 {
+    const B_Image image = BT_Glyph_getPlain(glyph);
     double height = (double)B_Image_getHeight( image );
     // normalize
     return height / DIM_NORM;
 }
 static double Alg_HeightCalc( Algorithm alg, const BT_Face face )
 {
-    return Alg_CalcAll( alg, face, NOEDGE, &Alg_HeightAlg );
+    return Alg_CalcAll( alg, face, &Alg_HeightAlg );
 }
 
 static void Alg_AspectRatioInit( Algorithm alg ){}
 static void Alg_AspectRatioDone( Algorithm alg ){}
-static double Alg_AspectRatioAlg( Algorithm alg, const B_Image image )
+static double Alg_AspectRatioAlg( Algorithm alg, const BT_Glyph glyph )
 {
+    const B_Image image = BT_Glyph_getPlain(glyph);
     int widthInt = B_Image_getWidth( image );
     int heightInt = B_Image_getHeight( image );
     double width = (double)widthInt;
@@ -121,7 +119,7 @@ static double Alg_AspectRatioAlg( Algorithm alg, const B_Image image )
 }
 static double Alg_AspectRatioCalc( Algorithm alg, const BT_Face face )
 {
-    return Alg_CalcAll( alg, face, NOEDGE, &Alg_AspectRatioAlg );
+    return Alg_CalcAll( alg, face, &Alg_AspectRatioAlg );
 }
 
 static void Alg_xHeightInit( Algorithm alg ){}
@@ -143,8 +141,9 @@ static double Alg_xHeightCalc( Algorithm alg, const BT_Face face )
 /////// Density /////////
 static void Alg_DensityInit( Algorithm alg ){}
 static void Alg_DensityDone( Algorithm alg ){}
-static double Alg_DensityAlg( Algorithm alg, B_Image image )
+static double Alg_DensityAlg( Algorithm alg, const BT_Glyph glyph )
 {
+    const B_Image image = BT_Glyph_getPlain(glyph);
     int width = B_Image_getWidth( image );
     int height = B_Image_getHeight( image );
     int area = width * height;
@@ -163,7 +162,7 @@ static double Alg_DensityAlg( Algorithm alg, B_Image image )
 }
 static double Alg_DensityCalc( Algorithm alg, const BT_Face face )
 {
-    return Alg_CalcAll( alg, face, NOEDGE, &Alg_DensityAlg );
+    return Alg_CalcAll( alg, face, &Alg_DensityAlg );
 }
 
 /////// Slant //////
@@ -185,14 +184,15 @@ static void Alg_SlantDone( Algorithm alg )
     B_Mask_delete( alg->slant[0] );
     B_Mask_delete( alg->slant[1] );
 }
-static double Alg_SlantAlg( Algorithm alg, const B_Image image )
+static double Alg_SlantAlg( Algorithm alg, const BT_Glyph glyph )
 {
+    const B_Image image = BT_Glyph_getEdge(glyph);
     double score = Alg_calculate( image, alg->slant, NUM_SLANT_MASKS );
     return score;
 }
 static double Alg_SlantCalc( Algorithm alg, const BT_Face face )
 {
-    return Alg_CalcAll( alg, face, EDGE, &Alg_SlantAlg );
+    return Alg_CalcAll( alg, face, &Alg_SlantAlg );
 }
 
 ///////   Curvature  /////////
@@ -219,31 +219,24 @@ static void Alg_CurveDone( Algorithm alg )
         B_Mask_delete( alg->curve[i] );
     }
 }
-static double Alg_CurveAlg( Algorithm alg, const B_Image image )
+static double Alg_CurveAlg( Algorithm alg, const BT_Glyph glyph )
 {
     // get an edge detected image
+    const B_Image image = BT_Glyph_getEdge(glyph);
     double score = Alg_calculate( image, alg->curve, NUM_CURVE_MASKS );
     return score;
 }
 static double Alg_CurveCalc( Algorithm alg, const BT_Face face )
 {
-    return Alg_CalcAll( alg, face, EDGE, &Alg_CurveAlg );
+    return Alg_CalcAll( alg, face, &Alg_CurveAlg );
 }
 //////////////////////////////
 
 static Algorithm algorithm = NULL;
 static int algRefCount = 0;
 
-static int edge_mat[] = {
-                             -1, -1, -1,
-                             -1,  8, -1,
-                             -1, -1, -1,
-                        };
-
-
 static void Alg_init( Algorithm alg )
 {
-    alg->edge = B_Mask_new( edge_mat, 1, 3, 3 );
     Alg_WidthInit( alg );
     Alg_HeightInit( alg );
     Alg_AspectRatioInit( alg );
@@ -255,7 +248,6 @@ static void Alg_init( Algorithm alg )
 
 static void Alg_done( Algorithm alg )
 {
-    B_Mask_delete( alg->edge );
     Alg_WidthDone( alg );
     Alg_HeightDone( alg );
     Alg_AspectRatioDone( alg );
