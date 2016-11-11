@@ -1,5 +1,6 @@
 #include "btypeface.h"
 #include "bimage.h"
+#include "bmask.h"
 
 // POD to hold both the glyph image and useful slot info
 typedef struct BT_Glyph_str
@@ -14,6 +15,7 @@ struct BT_Face_Rec_str
     FT_Library lib;
     FT_Face face;
     B_Image glyphs[NUM_GLYPHS];
+    B_Image glyphsEdge[NUM_GLYPHS];
 };
 
 static int BT_glyphHash( int charCode )
@@ -21,6 +23,11 @@ static int BT_glyphHash( int charCode )
     return (charCode - FIRST_GLYPH);
 }
 
+static int edge_mat[] = {
+                              0,  1,  0,
+                              1, -4,  1,
+                              0,  1,  0,
+                        };
 
 static FT_Library lib = NULL;
 static int libRefCount = 0;
@@ -40,6 +47,8 @@ BT_Face BT_Face_new( BT_Error *errorHandle, const char * fontFilePath, int point
     }
     ++libRefCount;
 
+    // setup edge mask
+    B_Mask edge = B_Mask_new( edge_mat, 1, 3, 3 );
 
     ft_error = FT_New_Face( lib, fontFilePath, 0, &ft_face );
     if( ft_error == FT_Err_Unknown_File_Format )
@@ -88,8 +97,10 @@ BT_Face BT_Face_new( BT_Error *errorHandle, const char * fontFilePath, int point
                             ft_face->glyph->bitmap.width, ft_face->glyph->bitmap.rows,
                             0, 0 );
         face->glyphs[index] = image;
+        face->glyphsEdge[index] = B_Mask_convolve(edge,image);
 
     }
+    B_Mask_delete( edge );
 
     return face;
 }
@@ -126,6 +137,12 @@ const char * BT_Face_getStyleName( const BT_Face face )
 const B_Image BT_Face_getChar( const BT_Face face, const int code )
 {
     const B_Image image = face->glyphs[BT_glyphHash(code)];
+    return image;
+}
+
+const B_Image BT_Face_getCharEdge( const BT_Face face, const int code )
+{
+    const B_Image image = face->glyphsEdge[BT_glyphHash(code)];
     return image;
 }
 

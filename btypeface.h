@@ -50,4 +50,9 @@ const char * BT_Face_getStyleName( const BT_Face face );
  */
 const B_Image BT_Face_getChar( const BT_Face face, const int code );
 
+/**
+ * Returns a B_Image from a char, edge detected
+ */
+const B_Image BT_Face_getCharEdge( const BT_Face face, const int code );
+
 #endif //__BTYPEFACE_H__
