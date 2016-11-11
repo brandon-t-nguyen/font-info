@@ -113,7 +113,7 @@ void BT_Face_delete( BT_Face face )
 
 }
 
-B_Image BT_Face_getChar( const BT_Face face, const int code )
+const B_Image BT_Face_getChar( const BT_Face face, const int code )
 {
     const B_Image image = face->glyphs[BT_glyphHash(code)];
     return image;

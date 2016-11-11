@@ -1,6 +1,6 @@
 CC = gcc
 LD = ld
-CFLAGS =-Wall -Wextra -Wno-unused-parameter -g -I/usr/include/freetype2 -lfreetype
+CFLAGS =-Wall -Wextra -Wno-unused-parameter -Wno-ignored-qualifiers -g -I/usr/include/freetype2 -lfreetype
 SOURCES = *.c
 EXECUTABLE = font-info
 VISUALIZE = vis

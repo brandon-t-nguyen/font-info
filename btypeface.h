@@ -42,14 +42,10 @@ typedef enum BT_Err_enum
 BT_Face BT_Face_new( BT_Error *errorHandle, const char * fontFilePath, int pointSize );
 void BT_Face_delete( BT_Face face );
 
-/**
- * Creates a B_Image from a string
- */
-//B_Image BT_Face_renderString( BT_Face face, const char * string );
 
 /**
- * Creates a B_Image from a char
+ * Returns a B_Image from a char
  */
-B_Image BT_Face_getChar( const BT_Face face, const int code );
+const B_Image BT_Face_getChar( const BT_Face face, const int code );
 
 #endif //__BTYPEFACE_H__
