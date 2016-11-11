@@ -9,16 +9,19 @@ typedef Algorithm_Rec * Algorithm;
 
 typedef enum Metric_enum
 {
-    Metric_Density=0,
+    Metric_Width,
+    Metric_Height,
+    Metric_AspectRatio,
+    Metric_xHeight,
+    Metric_Density,
     Metric_Curve,
     Metric_Slant,
-    Metric_AspectRatio,
     NUM_METRICS
 } Metric;
 
 typedef struct Metrics_str
 {
-    double Metric[NUM_METRICS];
+    double metrics[NUM_METRICS];
 } Metrics;
 
 /*
@@ -53,6 +56,20 @@ double Alg_calculateMetric( const Algorithm alg, const BT_Face face, const Metri
  */
 void Alg_calculateMetrics( const Algorithm alg, const BT_Face face, Metrics * results );
 
+/**
+ * Prints the metrics hedaer out in CSV form. Adds a new line
+ */
+void Metrics_fprintHeader( FILE * file );
+
+/**
+ * Prints the metrics out in CSV form. Adds a new line
+ */
+void Metrics_fprint( FILE * file, const BT_Face face, const Metrics * results );
+
+/**
+ * Returns a const string for a metric name
+ */
+const char * Alg_strMetric( Metric metric );
 
 #endif // __ALG_H__
 

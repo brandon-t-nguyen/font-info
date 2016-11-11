@@ -42,6 +42,8 @@ typedef enum BT_Err_enum
 BT_Face BT_Face_new( BT_Error *errorHandle, const char * fontFilePath, int pointSize );
 void BT_Face_delete( BT_Face face );
 
+const char * BT_Face_getFamilyName( const BT_Face face );
+const char * BT_Face_getStyleName( const BT_Face face );
 
 /**
  * Returns a B_Image from a char

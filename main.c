@@ -35,6 +35,13 @@ int main(int argc, char *argv[])
             fprintf(stderr, "What the fuck, couldn't make it!\n");
             continue;
         }
+        // do the algorithmic stuff
+        Metrics metrics;
+        Alg_calculateMetrics( alg, face, &metrics );
+
+        Metrics_fprintHeader( stdout );
+        Metrics_fprint( stdout, face, &metrics );
+
         BT_Face_delete( face );
     }
 
