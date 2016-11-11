@@ -9,17 +9,16 @@ typedef Algorithm_Rec * Algorithm;
 
 typedef enum Metric_enum
 {
-    Metric_Density,
+    Metric_Density=0,
     Metric_Curve,
-    Metric_Angle,
-
+    Metric_Slant,
+    Metric_AspectRatio,
+    NUM_METRICS
 } Metric;
 
 typedef struct Metrics_str
 {
-    double density;
-    double curve;
-    double slant;
+    double Metric[NUM_METRICS];
 } Metrics;
 
 /*
