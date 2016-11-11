@@ -31,9 +31,10 @@ int main(int argc, char *argv[])
         name++;
 
         BT_Face face = BT_Face_new( &error, fontFilePath, 12);
-        if( !face )
+        if( error != BT_Err_Ok )
         {
-            fprintf(stderr, "What the fuck, couldn't make it!\n");
+            fprintf(stderr, "Sorry, couldn't load face %s %s!\n", BT_Face_getFamilyName(face), BT_Face_getStyleName(face));
+            BT_Face_delete( face );
             continue;
         }
         // do the algorithmic stuff
