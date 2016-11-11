@@ -14,8 +14,8 @@ typedef enum Metric_enum
     Metric_AspectRatio,
     Metric_xHeight,
     Metric_Density,
-    Metric_Curve,
     Metric_Slant,
+    Metric_Curve,
     NUM_METRICS
 } Metric;
 

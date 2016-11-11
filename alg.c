@@ -6,9 +6,11 @@
 struct Algorithm_Rec_str
 {
     B_Mask edge;
+    B_Mask slant[2];
     B_Mask curve[4];
-    B_Mask straight[2];
 };
+
+#define DIM_NORM 100.0
 
 static double Alg_calculate( const B_Image image, B_Mask masks[], int numConvs )
 {
@@ -50,6 +52,9 @@ static double Alg_CalcAll( Algorithm alg, const BT_Face face, double (*algorithm
         }
     }
     double scoreAverage = scoreTotal/num;
+    // normalize
+    scoreAverage = scoreAverage > 1.0? 1.0 : scoreAverage;
+    scoreAverage = scoreAverage < 0.0? 0.0 : scoreAverage;
     return scoreAverage;
 }
 
@@ -60,7 +65,7 @@ static double Alg_WidthAlg( Algorithm alg, const B_Image image )
 {
     double width = (double)B_Image_getWidth( image );
     // normalize
-    return width / 1000;
+    return width / DIM_NORM;
 }
 static double Alg_WidthCalc( Algorithm alg, const BT_Face face )
 {
@@ -73,7 +78,7 @@ static double Alg_HeightAlg( Algorithm alg, const B_Image image )
 {
     double height = (double)B_Image_getHeight( image );
     // normalize
-    return height / 1000;
+    return height / DIM_NORM;
 }
 static double Alg_HeightCalc( Algorithm alg, const BT_Face face )
 {
@@ -84,10 +89,27 @@ static void Alg_AspectRatioInit( Algorithm alg ){}
 static void Alg_AspectRatioDone( Algorithm alg ){}
 static double Alg_AspectRatioAlg( Algorithm alg, const B_Image image )
 {
-    double width = (double)B_Image_getWidth( image );
-    double height = (double)B_Image_getHeight( image );
-    // TODO
-    return 0.0;
+    int widthInt = B_Image_getWidth( image );
+    int heightInt = B_Image_getHeight( image );
+    double width = (double)widthInt;
+    double height = (double)heightInt;
+    double ar = 0.0;    // aspect ratio
+    if( widthInt == heightInt )
+    {
+        return ar = 0.5;
+    }
+    else
+    {
+        if( heightInt > widthInt )
+        {
+            ar = 0.5 + width/height;
+        }
+        else
+        {
+            ar = 0.5 - height/width;
+        }
+    }
+    return ar;
 }
 static double Alg_AspectRatioCalc( Algorithm alg, const BT_Face face )
 {
@@ -96,13 +118,17 @@ static double Alg_AspectRatioCalc( Algorithm alg, const BT_Face face )
 
 static void Alg_xHeightInit( Algorithm alg ){}
 static void Alg_xHeightDone( Algorithm alg ){}
+/*
 static double Alg_xHeightAlg( Algorithm alg, const B_Image image )
 {
     return 0.0;
 }
+*/
 static double Alg_xHeightCalc( Algorithm alg, const BT_Face face )
 {
-    return 0.0;
+    B_Image x = BT_Face_getChar(face, 'x');
+    double height  = B_Image_getHeight(x);
+    return height / DIM_NORM;
 }
 
 
@@ -133,15 +159,34 @@ static double Alg_DensityCalc( Algorithm alg, const BT_Face face )
 }
 
 /////// Slant //////
-static void Alg_SlantInit( Algorithm alg ){}
-static void Alg_SlantDone( Algorithm alg ){}
+static int slant_l[] = {
+                           0,  0,  0,  0,  9,
+                           0,  0,  0,  9,  0,
+                           0,  0,  9,  0,  0,
+                           0,  9,  0,  0,  0,
+                           9,  0,  0,  0,  0,
+                        };
+#define NUM_SLANT_MASKS 2
+static void Alg_SlantInit( Algorithm alg )
+{
+    alg->slant[0] = B_Mask_new( slant_l, 1, 5, 5 );
+    alg->slant[1] = B_Mask_rotate( alg->slant[0] );
+}
+static void Alg_SlantDone( Algorithm alg )
+{
+    B_Mask_delete( alg->slant[0] );
+    B_Mask_delete( alg->slant[1] );
+}
 static double Alg_SlantAlg( Algorithm alg, const B_Image image )
 {
-    return 0.0;
+    B_Image edge = B_Mask_convolve( alg->edge, image );
+    double score = Alg_calculate( edge, alg->slant, NUM_SLANT_MASKS );
+    B_Image_delete(edge);
+    return score;
 }
 static double Alg_SlantCalc( Algorithm alg, const BT_Face face )
 {
-    return 0.0;
+    return Alg_CalcAll( alg, face, &Alg_SlantAlg );
 }
 
 ///////   Curvature  /////////
