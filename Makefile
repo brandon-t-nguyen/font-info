@@ -8,9 +8,9 @@ VISUALIZE = vis
 #TESTFONT = ~/fonts/google/Pacifico.ttf
 #TESTFONT = ~/fonts/google/Sacramento-Regular.ttf
 #TESTFONT = ~/fonts/google/Strait-Regular.ttf
-TESTFONT = ~/fonts/google/Amita-Regular.ttf
+#TESTFONT = ~/fonts/google/Amita-Regular.ttf
 #TESTFONT = ~/fonts/google/Aldrich-Regular.ttf
-#TESTFONT = ~/fonts/google/*.ttf
+TESTFONT = ~/fonts/google/*.ttf
 
 FONT1 = ~/fonts/google/Amita-Regular.ttf
 FONT2 = ~/fonts/google/Aldrich-Regular.ttf
@@ -27,10 +27,10 @@ clean:
 
 
 run: $(EXECUTABLE)
-	./$(EXECUTABLE) ${arg}
+	@./$(EXECUTABLE) ${arg}
 
 test: $(EXECUTABLE)
-	./$(EXECUTABLE) $(TESTFONT)
+	@./$(EXECUTABLE) $(TESTFONT)
 debug: $(EXECUTABLE)
 	gdb --args ./$(EXECUTABLE) ${arg} $(TESTFONT)
 mem: $(EXECUTABLE)
