@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
     BT_Face_delete(face2);
     #else
     Algorithm alg = Alg_getInstance();
+    Metrics_fprintHeader( stdout );
     for(int i = 1; i < argc; i++)
     {
         char *fontFilePath = argv[i];
@@ -39,7 +40,6 @@ int main(int argc, char *argv[])
         Metrics metrics;
         Alg_calculateMetrics( alg, face, &metrics );
 
-        Metrics_fprintHeader( stdout );
         Metrics_fprint( stdout, face, &metrics );
 
         BT_Face_delete( face );
