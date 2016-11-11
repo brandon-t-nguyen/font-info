@@ -70,7 +70,7 @@ BT_Face BT_Face_new( BT_Error *errorHandle, const char * fontFilePath, int point
         if( ft_error )
         {
             *errorHandle = BT_Err_Load_Char;
-            fprintf(stderr, "Unable to load char '%c' of font face \"%s\"", c, fontFilePath);
+            fprintf(stderr, "Unable to load char '%c' of font face \"%s\"\n", c, fontFilePath);
             face->glyphs[index] = NULL;
             continue;
         }
@@ -79,7 +79,7 @@ BT_Face BT_Face_new( BT_Error *errorHandle, const char * fontFilePath, int point
         if ( ft_error )
         {
             *errorHandle = BT_Err_Render_Char;
-            fprintf(stderr, "Unable to render char '%c' of font face \"%s\"", c, fontFilePath);
+            fprintf(stderr, "Unable to render char '%c' of font face \"%s\"\n", c, fontFilePath);
             face->glyphs[index] = NULL;
             continue;
         }
@@ -98,7 +98,8 @@ void BT_Face_delete( BT_Face face )
 {
     for( int i = 0; i < NUM_GLYPHS; i++ )
     {
-        B_Image_delete(face->glyphs[i]);
+        if(face->glyphs[i])
+            B_Image_delete(face->glyphs[i]);
     }
     FT_Done_Face( face->face );
     free(face);
