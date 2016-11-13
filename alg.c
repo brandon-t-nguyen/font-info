@@ -169,17 +169,24 @@ static double Alg_DensityCalc( Algorithm alg, const BT_Face face )
 
 /////// Slant //////
 static int slant_l[] = {
-                           0,  0,  0,  0,  9,
-                           0,  0,  0,  9,  0,
-                           0,  0,  9,  0,  0,
-                           0,  9,  0,  0,  0,
-                           9,  0,  0,  0,  0,
+/*
+                          -1, -1, -1, -1,  9,
+                          -1, -1, -1,  9, -1,
+                          -1, -1,  9, -1, -1,
+                          -1,  9, -1, -1, -1,
+                           9, -1, -1, -1, -1,
+*/
+                          -1, -1, -1, -1,  2,
+                          -1, -1, -1,  2, -1,
+                          -1, -1,  2, -1, -1,
+                          -1,  2, -1, -1, -1,
+                           2, -1, -1, -1, -1,
                         };
 #define NUM_SLANT_MASKS 2
 static void Alg_SlantInit( Algorithm alg )
 {
     alg->slant[0] = B_Mask_new( slant_l, 1, 5, 5 );
-    alg->slant[1] = B_Mask_rotate( alg->slant[0] );
+    alg->slant[1] = B_Mask_flipHor( alg->slant[0] );
 }
 static void Alg_SlantDone( Algorithm alg )
 {

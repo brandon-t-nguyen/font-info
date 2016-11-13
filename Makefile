@@ -12,9 +12,11 @@ VISUALIZE = vis
 #TESTFONT = ~/fonts/google/Aldrich-Regular.ttf
 TESTFONT = ~/fonts/google/*.ttf
 
-FONT1 = ~/fonts/google/Amita-Regular.ttf
-FONT2 = ~/fonts/google/Aldrich-Regular.ttf
-LETTER = S
+FONT1 = ~/fonts/google/MonsieurLaDoulaise-Regular.ttf
+FONT2 = ~/fonts/google/Roboto-Regular.ttf
+#FONT1 = ~/fonts/google/Amita-Regular.ttf
+#FONT2 = ~/fonts/google/Aldrich-Regular.ttf
+LETTER = I
 
 $(EXECUTABLE):
 	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(SOURCES) 
