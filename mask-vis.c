@@ -8,18 +8,12 @@
 #include "bmask.h"
 
 
-static int edge_mat[] = {
-                             -1, -1, -1,
-                             -1,  8, -1,
-                             -1, -1, -1,
-                        };
-
 static int curve_tl[] = {
-                          -9, -9, -9,  1,  1,
-                          -9, -9,  3,  7,  7,
-                          -9,  3,  7,  3, -9,
-                           1,  7,  3, -9, -9,
-                           1,  7, -9, -9, -9,
+                          -9, -9, -9,  0,  0,
+                          -9, -9,  0,  5,  5,
+                          -9,  0,  5,  0, -9,
+                           0,  5,  0, -9, -9,
+                           0,  5, -9, -9, -9,
                         };
 
 static int y,x;
@@ -145,7 +139,7 @@ void compare2( B_Image image1, B_Image image2, B_Mask mask, int row, int col )
                 addch(B_Image_grayToAscii(pixel));
             }
 
-            nanosleep(&req,&rem);
+            //nanosleep(&req,&rem);
             refresh();
             if( req.tv_nsec > 5000000)
                 req.tv_nsec -= 100000;
@@ -212,20 +206,23 @@ void compare( B_Image image, B_Mask mask, int row, int col )
 void visualize( BT_Face face1, BT_Face face2, int charcode )
 {
     B_Mask curve = B_Mask_new( curve_tl, 1, 5, 5 );
-    B_Mask edge = B_Mask_new( edge, 1, 3, 3 );
 
     initscr();
     printw("Hello World !!!");
+    const B_Image c1 = BT_Face_getCharEdge( face1, charcode );
+    const B_Image c2  = BT_Face_getCharEdge( face2, charcode );
 
-    const B_Image c1 = BT_Face_getChar( face1, charcode );
-    const B_Image c2  = BT_Face_getChar( face2, charcode );
-
-    compare2( c1, c2, curve, 0, 0 );
-    getch();
-    endwin();
+    for( int i = 0; i < 4; i++ )
+    {
+        compare2( c1, c2, curve, 0, 0 );
+        B_Mask curveTemp = B_Mask_rotate( curve );
+        B_Mask_delete( curve );
+        curve = curveTemp;
+        getch();
+    }
 
     B_Mask_delete( curve );
-    B_Mask_delete( edge );
+    endwin();
 }
 
 #endif

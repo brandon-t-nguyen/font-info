@@ -200,11 +200,18 @@ static double Alg_SlantCalc( Algorithm alg, const BT_Face face )
 ///////   Curvature  /////////
 
 static int curve_tl[] = {
+/*
                           -9, -9, -9,  1,  1,
                           -9, -9,  3,  7,  7,
                           -9,  3,  7,  3, -9,
                            1,  7,  3, -9, -9,
                            1,  7, -9, -9, -9,
+*/
+                          -9, -9, -9,  0,  0,
+                          -9, -9,  0,  5,  5,
+                          -9,  0,  5,  0, -9,
+                           0,  5,  0, -9, -9,
+                           0,  5, -9, -9, -9,
                         };
 #define NUM_CURVE_MASKS 4
 static void Alg_CurveInit( Algorithm alg )
