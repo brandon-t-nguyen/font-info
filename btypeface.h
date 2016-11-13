@@ -66,11 +66,11 @@ const BT_Glyph BT_Face_getGlyph( const BT_Face face, const int code );
 /**
  * Returns B_Image from a glyph
  */
-const B_Image BT_Glyph_getPlain( const BT_Glyph );
+const B_Image BT_Glyph_getPlain( const BT_Glyph glyph );
 
 /**
  * Returns edge detected B_Image from a glyph
  */
-const B_Image BT_Glyph_getEdge( const BT_Glyph );
+const B_Image BT_Glyph_getEdge( const BT_Glyph glyph );
 
 #endif //__BTYPEFACE_H__
