@@ -13,6 +13,12 @@ struct B_Mask_Rec_str
     int height;
 };
 
+enum B_Mask_Op_enum
+{
+    B_MASK_CONVOLVE,
+    B_MASK_CORRELATE
+};
+
 B_Mask B_Mask_new( const int matrix[], const int divisor,
                    const int width, const int height )
 {
@@ -105,14 +111,8 @@ B_Image B_Mask_mask( const B_Mask conv, const B_Image image,
     return out;
 }
 
-B_Image B_Mask_convolve( const B_Mask conv, const B_Image image )
-{
-    return B_Mask_mask( conv, image, &B_Mask_convolvePixel);
-}
-
-
-int B_Mask_convolvePixel( const B_Mask mask, const B_Image image,
-                          const int row, const int col )
+int B_Mask_pixel( const B_Mask mask, const B_Image image,
+                  const int row, const int col, enum B_Mask_Op_enum op )
 {
     int height = mask->height;
     int width = mask->width;
@@ -128,7 +128,23 @@ int B_Mask_convolvePixel( const B_Mask mask, const B_Image image,
     int srcCol = 0; // source col to get image pixel
     int coefSum = 0;
 
-    for( int cRow = height-1, iRow = row-midRow; cRow >= 0; cRow--, iRow++ )
+    int colStart;
+    int rowStart;
+    int inc;
+    if( op == B_MASK_CONVOLVE )
+    {
+        rowStart = height-1;
+        colStart = width-1;
+        inc = -1;
+    }
+    else
+    {
+        rowStart = 0;
+        colStart = 0;
+        inc = +1;
+    }
+
+    for( int cRow = rowStart, iRow = row-midRow, countRow = 0; countRow < height; cRow += inc, iRow++, countRow++ )
     {
         // extend the borders
         if( iRow < 0 )
@@ -138,7 +154,7 @@ int B_Mask_convolvePixel( const B_Mask mask, const B_Image image,
         else    // inside the image
             srcRow = iRow;
 
-        for( int cCol = width-1, iCol = col-midRow; cCol >= 0; cCol--, iCol++ )
+        for( int cCol = colStart, iCol = col-midRow, countCol = 0; countCol < width; cCol += inc, iCol++, countCol++ )
         {
             // for each cell in the conv
             if( iCol < 0 )
@@ -159,6 +175,18 @@ int B_Mask_convolvePixel( const B_Mask mask, const B_Image image,
     sum /= mask->divisor;       // divide by the divisor part
     sum /= coefSum?coefSum:1;   // divide by the coefficients
     return sum;
+}
+
+B_Image B_Mask_convolve( const B_Mask conv, const B_Image image )
+{
+    return B_Mask_mask( conv, image, &B_Mask_convolvePixel);
+}
+
+
+int B_Mask_convolvePixel( const B_Mask mask, const B_Image image,
+                          const int row, const int col )
+{
+    return B_Mask_pixel( mask, image, row, col, B_MASK_CONVOLVE );
 }
 
 B_Image B_Mask_correlate( const B_Mask conv, const B_Image image )
@@ -170,51 +198,7 @@ B_Image B_Mask_correlate( const B_Mask conv, const B_Image image )
 int B_Mask_correlatePixel( const B_Mask mask, const B_Image image,
                            const int row, const int col )
 {
-    int height = mask->height;
-    int width = mask->width;
-
-    int midRow = mask->height / 2;
-
-    int iHeight = B_Image_getHeight( image );
-    int iWidth = B_Image_getWidth( image );
-
-    int sum = 0;
-
-    int srcRow = 0; // source row to get image pixel
-    int srcCol = 0; // source col to get image pixel
-    int coefSum = 0;
-
-    for( int cRow = 0, iRow = row-midRow; cRow < height; cRow++, iRow++ )
-    {
-        // extend the borders
-        if( iRow < 0 )
-            srcRow = 0;
-        else if( iRow >= iHeight )
-            srcRow = iHeight-1;
-        else    // inside the image
-            srcRow = iRow;
-
-        for( int cCol = 0, iCol = col-midRow; cCol < width; cCol++, iCol++ )
-        {
-            // for each cell in the conv
-            if( iCol < 0 )
-                srcCol = 0;
-            else if( iCol >= iWidth )
-                srcCol = iWidth-1;
-            else
-                srcCol = iCol;
-
-            int cellVal = B_MASK_CELL(mask,cRow,cCol);
-            int pixelVal = (B_Image_getPixel( image, srcCol, srcRow )&0xFF);
-
-            sum += cellVal * pixelVal;
-            coefSum += cellVal<0?-cellVal:cellVal;
-        }
-    }
-
-    sum /= mask->divisor;       // divide by the divisor part
-    sum /= coefSum?coefSum:1;   // divide by the coefficients
-    return sum;
+    return B_Mask_pixel( mask, image, row, col, B_MASK_CORRELATE );
 }
 
 int B_Mask_getWidth( const B_Mask mask )
