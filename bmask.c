@@ -124,8 +124,6 @@ int B_Mask_pixel( const B_Mask mask, const B_Image image,
 
     int sum = 0;
 
-    int srcRow = 0; // source row to get image pixel
-    int srcCol = 0; // source col to get image pixel
     int coefSum = 0;
 
     int colStart;
@@ -146,29 +144,15 @@ int B_Mask_pixel( const B_Mask mask, const B_Image image,
 
     for( int cRow = rowStart, iRow = row-midRow, countRow = 0; countRow < height; cRow += inc, iRow++, countRow++ )
     {
-        // extend the borders
-        if( iRow < 0 )
-            srcRow = 0;
-        else if( iRow >= iHeight )
-            srcRow = iHeight-1;
-        else    // inside the image
-            srcRow = iRow;
-
         for( int cCol = colStart, iCol = col-midRow, countCol = 0; countCol < width; cCol += inc, iCol++, countCol++ )
         {
-            // for each cell in the conv
-            if( iCol < 0 )
-                srcCol = 0;
-            else if( iCol >= iWidth )
-                srcCol = iWidth-1;
-            else
-                srcCol = iCol;
-
-            int cellVal = B_MASK_CELL(mask,cRow,cCol);
-            int pixelVal = (B_Image_getPixel( image, srcCol, srcRow )&0xFF);
-
-            sum += cellVal * pixelVal;
-            coefSum += cellVal<0?-cellVal:cellVal;
+            if( 0 <= iRow && iRow < iHeight && 0 <= iCol && iCol < iWidth )
+            {
+                int cellVal = B_MASK_CELL(mask,cRow,cCol);
+                int pixelVal= (B_Image_getPixel( image, iCol, iRow )&0xFF);
+                sum += cellVal * pixelVal;
+                coefSum += cellVal<0?-cellVal:cellVal;
+            }
         }
     }
 
