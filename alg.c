@@ -33,7 +33,7 @@ static double Alg_calculate( const B_Image image, B_Mask masks[], int numConvs )
         }
     }
     area = area>0?area:1;
-    double finalScore = score/area;
+    double finalScore = (double)score/(double)area;
 
     // normalize
     finalScore = finalScore >= 1.0 ? 1.0 : finalScore;
@@ -97,25 +97,27 @@ static double Alg_AspectRatioAlg( Algorithm alg, const BT_Glyph glyph )
     const B_Image image = BT_Glyph_getPlain(glyph);
     int widthInt = B_Image_getWidth( image );
     int heightInt = B_Image_getHeight( image );
+    // deal with 0s: like with space
+    widthInt = widthInt? widthInt : 1;
+    heightInt = heightInt? heightInt : 1;
+
     double width = (double)widthInt;
     double height = (double)heightInt;
-    double ar = 0.0;    // aspect ratio
-    if( widthInt == heightInt )
+    double arScore = 0.5;   // default score
+    double offset  = 0.0;   // offset from score
+
+    if( heightInt > widthInt )
     {
-        return ar = 0.5;
+        // offset from 0.5 is determined by the multiple
+        offset = height/width/10.0;
     }
     else
     {
-        if( heightInt > widthInt )
-        {
-            ar = 0.5 + width/height;
-        }
-        else
-        {
-            ar = 0.5 - height/width;
-        }
+        // offset from 0.5 is determined by the multiple
+        offset = width/height/10.0;
     }
-    return ar;
+    arScore += offset;
+    return arScore;
 }
 static double Alg_AspectRatioCalc( Algorithm alg, const BT_Face face )
 {
@@ -132,7 +134,7 @@ static double Alg_xHeightAlg( Algorithm alg, const B_Image image )
 */
 static double Alg_xHeightCalc( Algorithm alg, const BT_Face face )
 {
-    B_Image x = BT_Face_getChar(face, 'x');
+    const B_Image x = BT_Face_getChar(face, 'x');
     double height  = B_Image_getHeight(x);
     return height / DIM_NORM;
 }
