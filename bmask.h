@@ -33,6 +33,11 @@ B_Mask B_Mask_transpose( const B_Mask input );
 B_Mask B_Mask_rotate( const B_Mask input );
 
 /**
+ * Returns a new B_Mask that's flipped horizontally
+ */
+B_Mask B_Mask_flipHor( const B_Mask input );
+
+/**
  * Returns a B_Image of the convolved image
  * @param mask The mask
  * @param image The input image

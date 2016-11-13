@@ -86,6 +86,30 @@ B_Mask B_Mask_rotate( const B_Mask input )
     return mask;
 }
 
+B_Mask B_Mask_flipHor( const B_Mask input )
+{
+    // flip H
+    B_Mask mask = (B_Mask) malloc( sizeof(B_Mask_Rec) );
+    mask->width = input->height;
+    mask->height = input->width;
+    mask->matrix = (int *) malloc( sizeof(int) * mask->width * mask->height );
+    mask->divisor = input->divisor;
+
+    int *matrix = mask->matrix;
+    int *matrixIn = input->matrix;
+    int height = input->height;
+    int width = input->width;
+    for( int r = 0; r < height; r++ )
+    {
+        for( int c = 0; c < width; c++ )
+        {
+            matrix[ r*width + c ] = matrixIn[ r*width + (width-1-c) ];
+        }
+    }
+
+    return mask;
+}
+
 B_Image B_Mask_mask( const B_Mask conv, const B_Image image,
                      int (*pixelOp)(const B_Mask, const B_Image, const int, const int) )
 {
