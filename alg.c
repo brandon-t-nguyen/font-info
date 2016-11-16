@@ -246,6 +246,77 @@ static double Alg_CurveCalc( Algorithm alg, const BT_Face face )
 {
     return Alg_CalcAll( alg, face, &Alg_CurveAlg );
 }
+
+///////   Serif   /////////
+#define NUM_PROJECTION_MASKS 4
+static void Alg_SerifInit( Algorithm alg )
+{
+}
+static void Alg_SerifDone( Algorithm alg )
+{
+}
+/*
+static double Alg_SerifAlg( Algorithm alg, const BT_Glyph glyph )
+{
+    // get an edge detected image
+    const B_Image image = BT_Glyph_getChar(glyph);
+
+    return score;
+}
+*/
+static inline int Alg_SerifSumRow( const B_Image image, int row, int width )
+{
+    int sum = 0;
+    for( int col = 0; col < width; col++ )
+    {
+        sum += B_Image_getPixel( image, col, row );
+    }
+    return sum;
+}
+static inline int Alg_SerifSumCol( const B_Image image, int col, int height )
+{
+    int sum = 0;
+    for( int row = 0; row < height; row++ )
+    {
+        sum += B_Image_getPixel( image, col , row );
+    }
+    return sum;
+}
+#define DIFF_THRESHOLD 255
+static char Alg_SerifArray[] = {'I','E','H','L'};
+static double Alg_SerifCalc( Algorithm alg, const BT_Face face )
+{
+    // get a delta on row reading an I
+    double score = 0;
+    for( unsigned int i = 0; i < sizeof(Alg_SerifArray)/sizeof(Alg_SerifArray[0]); i++)
+    {
+        const B_Image image = BT_Face_getChar(face,Alg_SerifArray[i]);
+        int height = B_Image_getHeight( image );
+        int width = B_Image_getWidth( image );
+        if( height == 0 || width == 0 )
+            return score;
+
+        for( int r = 1, prevSum = Alg_SerifSumRow( image, 0, width ); r < height; r++ )
+        {
+            int sum = Alg_SerifSumRow( image, r, width );
+
+            if( !(prevSum - DIFF_THRESHOLD <= sum && sum <= prevSum + DIFF_THRESHOLD) )
+                score += 0.001;
+
+            prevSum = sum;
+        }
+        for( int c = 1, prevSum = Alg_SerifSumCol( image, 0, height ); c < width; c++ )
+        {
+            int sum = Alg_SerifSumCol( image, c, height );
+
+            if( !(prevSum - DIFF_THRESHOLD <= sum && sum <= prevSum + DIFF_THRESHOLD) )
+                score += 0.001;
+
+            prevSum = sum;
+        }
+    }
+    return score;
+}
 //////////////////////////////
 
 static Algorithm algorithm = NULL;
@@ -258,8 +329,9 @@ static void Alg_init( Algorithm alg )
     Alg_AspectRatioInit( alg );
     Alg_xHeightInit( alg );
     Alg_DensityInit( alg );
-    Alg_CurveInit( alg );
     Alg_SlantInit( alg );
+    Alg_CurveInit( alg );
+    Alg_SerifInit( alg );
 }
 
 static void Alg_done( Algorithm alg )
@@ -269,8 +341,9 @@ static void Alg_done( Algorithm alg )
     Alg_AspectRatioDone( alg );
     Alg_xHeightDone( alg );
     Alg_DensityDone( alg );
-    Alg_CurveDone( alg );
     Alg_SlantDone( alg );
+    Alg_CurveDone( alg );
+    Alg_SerifDone( alg );
 }
 
 
@@ -334,11 +407,14 @@ double Alg_calculateMetric( Algorithm alg, const BT_Face face, const Metric metr
     case Metric_Density:
         return Alg_DensityCalc( alg, face );
         break;
+    case Metric_Slant:
+        return Alg_SlantCalc( alg, face );
+        break;
     case Metric_Curve:
         return Alg_CurveCalc( alg, face );
         break;
-    case Metric_Slant:
-        return Alg_SlantCalc( alg, face );
+    case Metric_Serif:
+        return Alg_SerifCalc( alg, face );
         break;
     default:
         fprintf(stderr,"Not a valid metric!\n");
@@ -349,6 +425,7 @@ double Alg_calculateMetric( Algorithm alg, const BT_Face face, const Metric metr
 
 void Alg_calculateMetrics( Algorithm alg, const BT_Face face, Metrics * results )
 {
+    //results->metrics[Metric_Serif] = Alg_calculateMetric( alg, face, Metric_Serif );
     for( int i = 0; i < NUM_METRICS; i++ )
     {
         results->metrics[i] = Alg_calculateMetric( alg, face, i );
@@ -394,11 +471,14 @@ const char * Alg_strMetric( Metric metric )
     case Metric_Density:
         return "Density";
         break;
+    case Metric_Slant:
+        return "Slant";
+        break;
     case Metric_Curve:
         return "Curve";
         break;
-    case Metric_Slant:
-        return "Slant";
+    case Metric_Serif:
+        return "Serif";
         break;
     default:
         return "Not a valid metric!";

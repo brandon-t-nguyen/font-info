@@ -16,6 +16,7 @@ typedef enum Metric_enum
     Metric_Density,
     Metric_Slant,
     Metric_Curve,
+    Metric_Serif,
     NUM_METRICS
 } Metric;
 
