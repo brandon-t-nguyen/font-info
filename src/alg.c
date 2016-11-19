@@ -355,7 +355,7 @@ Algorithm Alg_getInstance(void)
     {
         // new instance!
         algRefCount = 0;
-        algorithm = malloc(sizeof(Algorithm_Rec));
+        algorithm = (Algorithm) malloc(sizeof(Algorithm_Rec));
         Alg_init( algorithm );
     }
     ++algRefCount;
@@ -429,7 +429,7 @@ void Alg_calculateMetrics( Algorithm alg, const BT_Face face, Metrics * results 
     //results->metrics[Metric_Serif] = Alg_calculateMetric( alg, face, Metric_Serif );
     for( int i = 0; i < NUM_METRICS; i++ )
     {
-        results->metrics[i] = Alg_calculateMetric( alg, face, i );
+        results->metrics[i] = Alg_calculateMetric( alg, face, (Metric) i );
     }
 }
 
@@ -438,7 +438,7 @@ void Metrics_fprintHeader( FILE * file )
     fprintf(file,"Family Name,Style Name,");
     for( int i = 0; i < NUM_METRICS; i++ )
     {
-        fprintf(file,"%s,", Metric_toString(i));
+        fprintf(file,"%s,", Metric_toString((Metric)i));
     }
     fprintf(file,"\n");
 }

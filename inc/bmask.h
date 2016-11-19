@@ -1,6 +1,10 @@
 #ifndef __B_MASK_H__
 #define __B_MASK_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <bimage.h>
 
 /**
@@ -77,5 +81,9 @@ int B_Mask_getWidth( const B_Mask mask );
 int B_Mask_getHeight( const B_Mask mask );
 int B_Mask_getDivisor( const B_Mask mask );
 const int *  B_Mask_getMatrix( const B_Mask mask );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //__B_MASK_H__

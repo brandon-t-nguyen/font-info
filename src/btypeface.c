@@ -69,7 +69,7 @@ BT_Face BT_Face_new( BT_Error *errorHandle, const char * fontFilePath, int point
 
     ft_error = FT_Set_Char_Size( ft_face, 0, point(pointSize), DPI, DPI);
 
-    BT_Face face = malloc(sizeof(BT_Face_Rec));
+    BT_Face face = (BT_Face) malloc(sizeof(BT_Face_Rec));
     face->lib = lib;
     face->face = ft_face;
 
@@ -96,7 +96,7 @@ BT_Face BT_Face_new( BT_Error *errorHandle, const char * fontFilePath, int point
             continue;
         }
         // allocate space for the glyph
-        face->glyphs[index] = malloc(sizeof(BT_Glyph_Rec));
+        face->glyphs[index] = (BT_Glyph) malloc(sizeof(BT_Glyph_Rec));
         B_Image image = B_Image_new( ft_face->glyph->bitmap.width, ft_face->glyph->bitmap.rows );
         B_Image_drawBitmap( image, ft_face->glyph->bitmap.buffer,
                             ft_face->glyph->bitmap.width, ft_face->glyph->bitmap.rows,

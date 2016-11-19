@@ -1,6 +1,11 @@
 #ifndef __ALG_H__
 #define __ALG_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include <btypeface.h>
 #include <bimage.h>
 
@@ -78,5 +83,8 @@ const char * Metric_toString( Metric metric );
  */
 Metric Metric_fromString( const char * name );
 
+#ifdef __cplusplus
+}
+#endif
 #endif // __ALG_H__
 

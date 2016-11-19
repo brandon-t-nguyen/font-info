@@ -1,6 +1,10 @@
 #ifndef __BTYPEFACE_H__
 #define __BTYPEFACE_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
@@ -72,5 +76,9 @@ const B_Image BT_Glyph_getPlain( const BT_Glyph glyph );
  * Returns edge detected B_Image from a glyph
  */
 const B_Image BT_Glyph_getEdge( const BT_Glyph glyph );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //__BTYPEFACE_H__

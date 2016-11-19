@@ -1,6 +1,10 @@
 #ifndef __BIMAGE_H__
 #define __BIMAGE_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stdint.h>
 
@@ -62,8 +66,11 @@ void B_Image_fprint( B_Image image, FILE * file );
 
 // Getters
 
-int B_Image_getWidth( B_Image image );
-int B_Image_getHeight( B_Image image );
+int B_Image_getWidth( const B_Image image );
+int B_Image_getHeight( const B_Image image );
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif //__BIMAGE_H__

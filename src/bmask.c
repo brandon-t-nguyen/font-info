@@ -31,7 +31,7 @@ B_Mask B_Mask_new( const int matrix[], const int divisor,
     mask->width = width;
     mask->height = height;
     mask->matrix = (int *) malloc( sizeof(int) * width * height );
-    mask->matrix = memcpy( mask->matrix, matrix, sizeof(float)*width*height );
+    mask->matrix = (int *) memcpy( mask->matrix, matrix, sizeof(float)*width*height );
     mask->divisor = divisor;
     return mask;
 }

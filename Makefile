@@ -1,4 +1,4 @@
-CC = gcc
+CC = g++
 LD = ld
 CFLAGS =-Wall -Wextra -Wno-unused-parameter -Wno-ignored-qualifiers -g -I/usr/include/freetype2 -lfreetype
 SOURCES = src/*.c

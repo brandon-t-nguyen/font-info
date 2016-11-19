@@ -20,7 +20,7 @@ B_Image B_Image_new( int width, int height )
     int area = width * height;
 
     // make the object
-    B_Image image = malloc( sizeof(B_Image_Rec) );
+    B_Image image = (B_Image) malloc( sizeof(B_Image_Rec) );
     image->width = width;
     image->height = height;
     image->widthCap = width;
@@ -99,12 +99,12 @@ void B_Image_fprint( B_Image image, FILE * file )
 }
 
 // Getters
-inline int B_Image_getWidth( B_Image image )
+int B_Image_getWidth( const B_Image image )
 {
     return image->width;
 }
 
-inline int B_Image_getHeight( B_Image image )
+int B_Image_getHeight( const B_Image image )
 {
     return image->height;
 }
