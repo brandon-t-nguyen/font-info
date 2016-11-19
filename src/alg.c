@@ -438,7 +438,7 @@ void Metrics_fprintHeader( FILE * file )
     fprintf(file,"Family Name,Style Name,");
     for( int i = 0; i < NUM_METRICS; i++ )
     {
-        fprintf(file,"%s,", Alg_strMetric(i));
+        fprintf(file,"%s,", Metric_toString(i));
     }
     fprintf(file,"\n");
 }
@@ -453,7 +453,7 @@ void Metrics_fprint( FILE * file, const BT_Face face, const Metrics * results )
     fprintf(file,"\n");
 }
 
-const char * Alg_strMetric( Metric metric )
+const char * Metric_toString( Metric metric )
 {
     switch( metric )
     {
@@ -486,4 +486,25 @@ const char * Alg_strMetric( Metric metric )
         break;
     }
     return "";
+}
+
+Metric Metric_fromString( const char * name )
+{
+    if(!strcmp(name,"Width"))
+        return Metric_Width;
+    if(!strcmp(name,"Height"))
+        return Metric_Height;
+    if(!strcmp(name,"AspectRatio"))
+        return Metric_AspectRatio;
+    if(!strcmp(name,"xHeight"))
+        return Metric_xHeight;
+    if(!strcmp(name,"Density"))
+        return Metric_Density;
+    if(!strcmp(name,"Slant"))
+        return Metric_Slant;
+    if(!strcmp(name,"Curve"))
+        return Metric_Curve;
+    if(!strcmp(name,"Serif"))
+        return Metric_Serif;
+    return Metric_Error;
 }

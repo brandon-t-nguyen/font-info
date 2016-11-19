@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
@@ -19,16 +20,43 @@ int main(int argc, char *argv[])
     BT_Face_delete(face2);
     #else
     Algorithm alg = Alg_getInstance();
+
+    if( argc == 4 )
+    {
+        if( !strcmp(argv[1],"-m") )
+        {
+            int exitCode = 0;
+            Metric metric = Metric_fromString(argv[2]);
+            if( metric != Metric_Error )
+            {
+                BT_Face face = BT_Face_new( &error, argv[3], 12);
+                if( error != BT_Err_Ok )
+                {
+                    fprintf(stderr, "Sorry, couldn't load face %s %s!\n", BT_Face_getFamilyName(face), BT_Face_getStyleName(face));
+                    exitCode = 1;
+                }
+                else
+                {
+                    // do the algorithmic stuff
+                    double metricScore = Alg_calculateMetric( alg, face, metric );
+                    printf( "%f\n", metricScore );
+                }
+                BT_Face_delete( face );
+            }
+            else
+            {
+                fprintf(stderr,"Invalid metric: %s\n",argv[2]);
+                exitCode = 2;
+            }
+            Alg_doneInstance(alg);
+            return exitCode;
+        }
+    }
+
     Metrics_fprintHeader( stdout );
     for(int i = 1; i < argc; i++)
     {
         char *fontFilePath = argv[i];
-        char *name = fontFilePath + strlen(fontFilePath)-1;
-        while( *name != '/' && name >= fontFilePath)
-        {
-            --name;
-        }
-        name++;
 
         BT_Face face = BT_Face_new( &error, fontFilePath, 12);
         if( error != BT_Err_Ok )

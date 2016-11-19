@@ -17,7 +17,8 @@ typedef enum Metric_enum
     Metric_Slant,
     Metric_Curve,
     Metric_Serif,
-    NUM_METRICS
+    NUM_METRICS,
+    Metric_Error
 } Metric;
 
 typedef struct Metrics_str
@@ -70,7 +71,12 @@ void Metrics_fprint( FILE * file, const BT_Face face, const Metrics * results );
 /**
  * Returns a const string for a metric name
  */
-const char * Alg_strMetric( Metric metric );
+const char * Metric_toString( Metric metric );
+
+/**
+ * Returns a const string for a metric name
+ */
+Metric Metric_fromString( const char * name );
 
 #endif // __ALG_H__
 
