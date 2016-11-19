@@ -5,7 +5,7 @@
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
 
-#include "bimage.h"
+#include <bimage.h>
 
 /**
  * This is a set of abstractions for accessing some things from FreeType2

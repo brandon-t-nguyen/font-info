@@ -1,8 +1,9 @@
 #include <stdlib.h>
-#include "alg.h"
-#include "btypeface.h"
-#include "bimage.h"
-#include "bmask.h"
+
+#include <alg.h>
+#include <btypeface.h>
+#include <bimage.h>
+#include <bmask.h>
 
 struct Algorithm_Rec_str
 {

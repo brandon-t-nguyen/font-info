@@ -1,7 +1,8 @@
 CC = gcc
 LD = ld
 CFLAGS =-Wall -Wextra -Wno-unused-parameter -Wno-ignored-qualifiers -g -I/usr/include/freetype2 -lfreetype
-SOURCES = *.c
+SOURCES = src/*.c
+INCLUDE = inc
 EXECUTABLE = font-info
 VISUALIZE = vis
 #TESTFONT = ~/fonts/google/Roboto-Regular.ttf
@@ -21,7 +22,7 @@ FONT2 = ~/fonts/google/Roboto-Regular.ttf
 LETTER = T
 
 $(EXECUTABLE):
-	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(SOURCES) 
+	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(SOURCES) -I $(INCLUDE)
 
 $(VISUALIZE):
 	$(CC) $(CFLAGS) -lncurses -D VISUALIZE -o $(VISUALIZE) $(SOURCES)

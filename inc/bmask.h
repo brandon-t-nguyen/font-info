@@ -1,7 +1,7 @@
 #ifndef __B_MASK_H__
 #define __B_MASK_H__
 
-#include "bimage.h"
+#include <bimage.h>
 
 /**
  * Image masks

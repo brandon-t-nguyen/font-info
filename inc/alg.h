@@ -1,8 +1,8 @@
 #ifndef __ALG_H__
 #define __ALG_H__
 
-#include "btypeface.h"
-#include "bimage.h"
+#include <btypeface.h>
+#include <bimage.h>
 
 typedef struct Algorithm_Rec_str Algorithm_Rec;
 typedef Algorithm_Rec * Algorithm;

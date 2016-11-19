@@ -3,9 +3,9 @@
 #include <time.h>
 
 #include <ncurses.h>
-#include "btypeface.h"
-#include "bimage.h"
-#include "bmask.h"
+#include <btypeface.h>
+#include <bimage.h>
+#include <bmask.h>
 
 
 static int curve_tl[] = {

@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdlib.h>
-#include "bimage.h"
+
+#include <bimage.h>
 
 
 // the strcut definition

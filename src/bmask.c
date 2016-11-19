@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
-#include "bmask.h"
+
+#include <bmask.h>
 
 #define B_MASK_INDEX(m,r,c) (c + r*(m->width))
 #define B_MASK_CELL(m,r,c) ( m->matrix[B_MASK_INDEX(m,r,c)] )

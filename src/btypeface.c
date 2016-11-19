@@ -1,6 +1,6 @@
-#include "btypeface.h"
-#include "bimage.h"
-#include "bmask.h"
+#include <btypeface.h>
+#include <bimage.h>
+#include <bmask.h>
 
 // POD to hold both the glyph image and useful slot info
 typedef struct BT_Glyph_Rec_str

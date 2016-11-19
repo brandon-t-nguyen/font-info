@@ -2,10 +2,10 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include "btypeface.h"
-#include "bimage.h"
-#include "bmask.h"
-#include "alg.h"
+#include <btypeface.h>
+#include <bimage.h>
+#include <bmask.h>
+#include <alg.h>
 
 extern void visualize( BT_Face face1, BT_Face face2, int charcode );
 int main(int argc, char *argv[])
