@@ -21,14 +21,23 @@ FONT1 = ~/fonts/google/PlayfairDisplay-Regular.ttf
 FONT2 = ~/fonts/google/Roboto-Regular.ttf
 LETTER = T
 
+MAIN = main.c
+
+TEST_DIR = test
+GTEST_EXEC = font-test
+GTEST_SRC = $(TEST_DIR)/*.cpp
+
 $(EXECUTABLE):
-	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(SOURCES) -I $(INCLUDE)
+	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(MAIN) $(SOURCES) -I $(INCLUDE)
 
 $(VISUALIZE):
-	$(CC) $(CFLAGS) -lncurses -D VISUALIZE -o $(VISUALIZE) $(SOURCES)
+	$(CC) $(CFLAGS) -lncurses -D VISUALIZE -o $(VISUALIZE) $(MAIN) $(SOURCES) -I $(INCLUDE)
+
+$(GTEST_EXEC):
+	$(CC) $(CFLAGS) -o $(GTEST_EXEC) $(SOURCES) -I $(INCLUDE) $(GTEST_SRC) -lgtest
 
 clean:
-	rm *.o $(EXECUTABLE) $(VISUALIZE) $(TESTLOG)
+	rm *.o $(EXECUTABLE) $(VISUALIZE) $(TESTLOG) $(GTEST_EXEC)
 
 
 run: $(EXECUTABLE)
@@ -41,6 +50,8 @@ debug: $(EXECUTABLE)
 mem: $(EXECUTABLE)
 	valgrind -v --leak-check=yes --undef-value-errors=no ./$(EXECUTABLE) $(TESTFONT)
 
+gtest: $(GTEST_EXEC)
+	@./$(GTEST_EXEC)
 
 testvis: $(VISUALIZE)
 	./$(VISUALIZE) $(FONT1) $(FONT2) $(LETTER)
