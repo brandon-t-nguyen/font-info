@@ -53,7 +53,7 @@ void B_Image_setPixel( B_Image image, int x, int y, uint8_t pixel );
  * @param x The x-position of the bitmap (0 is left border of bitmap)
  * @param y The y-position of the bitmap (0 is top border of bitmap)
  */
-void B_Image_drawBitmap( B_Image image, uint8_t buffer[], int width, int height, int x, int y );
+void B_Image_drawBitmap( B_Image image, const uint8_t buffer[], int width, int height, int x, int y );
 
 
 /**

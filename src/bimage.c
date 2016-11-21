@@ -69,7 +69,7 @@ void B_Image_setPixel( B_Image image, int x, int y, uint8_t pixel )
     }
 }
 
-void B_Image_drawBitmap( B_Image image, uint8_t buffer[], int width, int height, int x, int y )
+void B_Image_drawBitmap( B_Image image, const uint8_t buffer[], int width, int height, int x, int y )
 {
     uint8_t *row;
     for( int r = y, rBuffer = 0; r < image->height && rBuffer < height; r++, rBuffer++ )
