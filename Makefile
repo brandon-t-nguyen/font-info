@@ -51,7 +51,7 @@ mem: $(EXECUTABLE)
 	valgrind -v --leak-check=yes --undef-value-errors=no ./$(EXECUTABLE) $(TESTFONT)
 
 gtest: $(GTEST_EXEC)
-	@./$(GTEST_EXEC)
+	@./$(GTEST_EXEC) ~/fonts/google/
 
 testvis: $(VISUALIZE)
 	./$(VISUALIZE) $(FONT1) $(FONT2) $(LETTER)
